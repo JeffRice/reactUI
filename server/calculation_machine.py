@@ -7,7 +7,7 @@ from typing import List, Optional
 from datetime import datetime
 from collections.abc import Mapping
 from pydash import py_
-from server.calculation import Calculation, random_true
+from server.calculation import Calculation
 
 
 def loop_in_thread(f, calc_delay):

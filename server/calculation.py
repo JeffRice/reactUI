@@ -6,12 +6,6 @@ from dataclasses import dataclass, replace, asdict, field
 from datetime import datetime, timedelta
 from pydash import py_
 
-# the maximum number of seconds we want a calculation to take
-max_seconds = 60
-
-# number of x values per 1.0 along the x-axis
-resolution = 100
-
 
 @dataclass(frozen=True)
 class Error:
@@ -141,13 +135,6 @@ class Calculation:
         }
 
 
-def random_true(frequency):
-    return random.choices([True, False], weights=[1, frequency])[0]
-
-def random_error():
-    if random_true(error_frequency):
-        return random.shuffle(choice(errors))
-
 def calc_values(calc_type, foo, bar, baz):
     return [calc_y(x,
                    calc_type=calc_type,
@@ -157,6 +144,9 @@ def calc_values(calc_type, foo, bar, baz):
 
 def calc_xs():
 
+    # number of x values per 1.0 along the x-axis
+    resolution = 100
+    
     x_min = -10.0
     x_max = 10.0
 
@@ -165,7 +155,6 @@ def calc_xs():
     steps = ceil(domain / step_size)
     return (x_min + (n * step_size) for n in range(0, steps))
 
-# todo: work these out
 calc_types = {
     "blue": lambda x, v: v * sin(x),
     "green": lambda x, v: v * cos(x),
@@ -174,24 +163,6 @@ calc_types = {
 }
 
 def calc_y(x, calc_type, foo, bar, baz):
-    """
-    A ridiculous but interesting curve of values that incorporates
-    the various UI elements in the exercise.
-
-    To see what they look like, you can use the online graphing
-    calculator here: https://www.desmos.com/calculator
-
-    And enter the following examples.
-    Here, foo=-2, bar=10, baz=.5 and start's day=2
-
-    For "blue": (-2sin(x)*cos(10x)+2)*sin(x)
-
-    For "green: (-2sin(x)*cos(10x))*cos(x)
-
-    For "purple": (-2sin(x)*cos(10x)+0+2) + x
-
-    For "yellow": (-2sin(x)*cos(10x)+0+2) - x
-    """
     calc = calc_types[calc_type]
-    v = (foo * sin(x)) * cos(bar * x)
+    v = (foo * sin(x)) * cos(bar * x) + baz
     return calc(x, v)
