@@ -9,7 +9,8 @@ from pydash import py_
 from server.calculation import Calculation, random_true
 from server.calculation_machine import CalculationMachine
 
-logging.basicConfig(level=logging.DEBUG, format="%(asctime)s %(levelname)s: %(message)s")
+logging.basicConfig(level=logging.DEBUG,
+                    format="%(asctime)s %(levelname)s: %(message)s")
 
 def create_app(machine):
 
@@ -55,19 +56,21 @@ def create_app(machine):
 
 class Server(cli.Application):
 
-    simulate_other_users = cli.Flag("--no-other-users",
-                                    default=True,
-                                    help="Will not simulate other users creating and cancelling calculations")
+    other_user_freq = cli.SwitchAttr("--other-user-freq",
+                                     argtype=int,
+                                     default=5,
+                                     help="How often simulated users should start calculations, -1 for never.")
 
-    simulate_errors = cli.Flag("--no-errors",
-                               default=True,
-                               help="Will not simulate calculations encountering errors")
+    other_user_cancel_freq = cli.SwitchAttr("--other-user-cancel",
+                                            argtype=int,
+                                            default=10,
+                                            help="How often simulated users should cancl their calculations. -1 for never.")
 
-    simulate_cancellations = cli.Flag("--no-cancels",
-                                      default=True,
-                                      requires=['--no-other-users'],
-                                      help="Will not simulate other users cancelling their calculations")
-
+    error_freq = cli.SwitchAttr("--error-freq",
+                                argtype=int,
+                                default=30,
+                                help="How often errors should occur. -1 for never")
+    
     seed = cli.SwitchAttr("--seed",
                           argtype=int,
                           default=5,
@@ -77,26 +80,27 @@ class Server(cli.Application):
     def main(self, port: int):
 
         machine = CalculationMachine()
+        # app = create_app(machine)
 
+        if self.error_freq != -1:
+            logging.info(f"Simulating errors roughly every {self.error_freq} seconds")
+            machine.simulate_errors(frequency=self.error_freq)
+
+        if self.other_user_cancel_freq != -1:
+            logging.info(f"Simulating other users cancelling calculations roughly every {self.other_user_cancel_freq} seconds.")
+            machine.simulate_cancellations(frequency=self.other_user_cancel_freq)
+
+        if self.other_user_freq != -1:
+            logging.info(f"Simulating other users starting calculations roughly every {self.other_user_freq} seconds.")
+            machine.simulate_other_users(frequency=self.other_user_freq)
+
+
+        logging.info(f"Seeding machine with {self.seed} running calculations.")
         for _ in range(self.seed):
             machine.add(Calculation.random())
 
-#        app = create_app(machine)
-
-#        app.run(port=port)
-#        logging.info(f"Server listening on port {port}")
-
-        if self.simulate_errors:
-            logging.info("Simulating errors.")
-            machine.simulate_errors()
-
-        if self.simulate_other_users:
-            logging.info("Simulating other users.")
-            machine.simulate_other_users()
-
-        if self.simulate_cancellations:
-            logging.info("Simulating other users cancelling calculations.")
-            machine.simulate_cancellations()
+        # app.run(port=port)
+        # logging.info(f"Server listening on port {port}")
 
 
 if __name__ == '__main__':

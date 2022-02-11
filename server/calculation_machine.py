@@ -1,6 +1,7 @@
 import logging
 import time
 import random
+import math
 from threading import Thread
 from typing import List, Optional
 from datetime import datetime
@@ -16,6 +17,11 @@ def loop_in_thread(f, calc_delay):
             time.sleep(calc_delay())
     Thread(target=loop).start()
 
+def variable_delay(frequency):
+    min_freq = max(0, math.ceil(frequency * .50))
+    max_freq = math.ceil(frequency * 1.50)
+    return lambda: random.randint(min_freq, max_freq)
+    
 
 class CalculationMachine(Mapping):
 
@@ -33,7 +39,7 @@ class CalculationMachine(Mapping):
         return len(self.calculations)
 
     def add(self, c):
-        logging.info(f"Adding calc {c}")
+        logging.info(f"Adding calc {c.id}")
         self.calculations[c.id] = c
 
     def cancel(self, uuid):
@@ -44,22 +50,22 @@ class CalculationMachine(Mapping):
         logging.info(f"Error: {uuid}, {error}")
         self.calculations[uuid] = self.calculations[uuid].errored(error, datetime.now())
 
-    def simulate_other_users(self):
+    def simulate_other_users(self, frequency):
         def f():
             calc = Calculation.random()
             self.add(calc)
             self.other_user_calc_ids.append(calc.id)
-        loop_in_thread(f, lambda: random.randint(5, 60))
+        loop_in_thread(f, variable_delay(frequency))
 
-    def simulate_cancellations(self):
+    def simulate_cancellations(self, frequency):
         def f():
             # cancel a calc every once in a while
             if self.other_user_calc_ids:
                 victim = random.choice(self.other_user_calc_ids)
                 self.cancel(victim)
-        loop_in_thread(f, lambda: random.randint(30, 120))
+        loop_in_thread(f, variable_delay(frequency))
 
-    def simulate_errors(self):
+    def simulate_errors(self, frequency):
 
         errors = [
             "Lost connection to sensor",
@@ -68,10 +74,8 @@ class CalculationMachine(Mapping):
         ]
 
         def f():
-            sleep = random.randint(5, 120)
-            time.sleep(sleep)
             if self.calculations:
                 victim = random.choice(list(self.calculations.keys()))
                 error = random.choice(errors)
-                self.error(victim, error, datetime.now())
-        loop_in_thread(f, random.randint(10, 60))
+                self.error(victim, error)
+        loop_in_thread(f, variable_delay(frequency))
