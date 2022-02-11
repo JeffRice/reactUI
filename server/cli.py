@@ -1,5 +1,6 @@
 import logging
 from plumbum import cli
+from server.server import create_app
 from server.calculation import Calculation
 from server.calculation_machine import CalculationMachine
 
@@ -32,8 +33,7 @@ class ServerCli(cli.Application):
     def main(self, port: int):
 
         machine = CalculationMachine()
-        # app = create_app(machine)
-
+        
         if self.error_freq != -1:
             logging.info(f"Simulating errors roughly every {self.error_freq} seconds")
             machine.simulate_errors(frequency=self.error_freq)
@@ -51,9 +51,9 @@ class ServerCli(cli.Application):
         for _ in range(self.seed):
             machine.add(Calculation.random())
 
-        # app.run(port=port)
-        # logging.info(f"Server listening on port {port}")
-
-
+        app = create_app(machine)
+        app.run(port=port)
+        logging.info(f"Server listening on port {port}")
+            
 if __name__ == '__main__':
     ServerCli.run()

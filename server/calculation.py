@@ -7,6 +7,35 @@ from datetime import datetime, timedelta
 from pydash import py_
 
 
+def calc_xs():
+
+    # number of x values per 1.0 along the x-axis
+    resolution = 100
+    
+    x_min = -10.0
+    x_max = 10.0
+
+    domain = x_max - x_min
+    step_size = 1 / resolution
+    steps = ceil(domain / step_size)
+    return (x_min + (n * step_size) for n in range(0, steps))
+
+calc_types = {
+    "blue": lambda x, v: v * sin(x),
+    "green": lambda x, v: v * cos(x),
+    "purple": lambda x, v: v + (x),
+    "yellow": lambda x, v: v - (x)
+}
+
+def calc_y(x, calc_type, foo, bar, baz):
+    """Some visually interesting functions, 
+    should the candidate be curious to visualize them
+    """
+    calc = calc_types[calc_type]
+    v = (foo * sin(x)) * cos(bar * x) + baz
+    return calc(x, v)
+
+
 @dataclass(frozen=True)
 class Error:
     errored_at: datetime
@@ -14,7 +43,7 @@ class Error:
 
 @dataclass(frozen=True)
 class Calculation:
-    """ Simulates a long-running calculation that updates a value
+    """Simulates a long-running calculation that updates a value
     over a period of time until it arrives at the final answer,
     like a differential equation.
 
@@ -25,42 +54,43 @@ class Calculation:
     """
     id: UUID
 
-    calc_type: str
     started_at: datetime
 
-    # any integer from -10 to +10, inclusive
-    foo: int
-
-    # any number
-    bar: int
-
-    # any number from 0 to 10, inclusive
-    baz: float
+    inputs: dict
 
     # the intermediate values of the calculation
     values: List[float]
 
     # how many values this can "calculate" per second
-    values_per_second: int = field(default=100)
+    values_per_second: int
 
     error: Optional[Error] = field(default=None)
     cancelled_at: datetime = field(default=None)
 
     @staticmethod
-    def random():
-        calc_type = random.choice(list(calc_types.keys()))
-        foo = random.randint(-10, 10)
-        bar = random.randint(-10, 10)
-        baz = random.randint(0, 10)
-        values = calc_values(calc_type, foo, bar, baz)
+    def create(inputs: dict,
+               started_at: datetime = datetime.now(),
+               values_per_second: int = 100,
+               xs = calc_xs(),
+               calc_y = calc_y):
+        values = [calc_y(x, **inputs) for x in xs]
         return Calculation(id=uuid4(),
-                           calc_type=calc_type,
-                           started_at=datetime.now(),
-                           foo=foo,
-                           bar=bar,
-                           baz=baz,
+                           started_at=started_at,
+                           inputs=inputs,
                            values=values,
-                           values_per_second=random.randint(50, 300))
+                           values_per_second=values_per_second)
+        
+    
+    @staticmethod
+    def random():        
+        return Calculation.create(
+            inputs={
+                'calc_type': random.choice(list(calc_types.keys())),
+                'foo': random.randint(-10, 10),
+                'bar': random.randint(-10, 10),
+                'baz': random.randint(0, 10),
+            },
+            values_per_second=random.randint(50, 400))
 
     def __repr__(self):
         return str(self)
@@ -124,45 +154,14 @@ class Calculation:
         return py_.omit(self.detail(time), 'values')
 
     def detail(self, time):
-        return {
+        return py_.omit({
             **asdict(self),
+            **self.inputs,
             'values': self.values_at_time(time),
             'value': self.value_at_time(time),
             'completed_at': self.completed_at(time),
             'cancelled_at': self.cancelled_at,
             'error': self.error or None,
             'fraction_complete': self.fraction_complete(time)
-        }
+        }, 'inputs')
 
-
-def calc_values(calc_type, foo, bar, baz):
-    return [calc_y(x,
-                   calc_type=calc_type,
-                   foo=foo,
-                   bar=bar,
-                   baz=baz) for x in calc_xs()]
-
-def calc_xs():
-
-    # number of x values per 1.0 along the x-axis
-    resolution = 100
-    
-    x_min = -10.0
-    x_max = 10.0
-
-    domain = x_max - x_min
-    step_size = 1 / resolution
-    steps = ceil(domain / step_size)
-    return (x_min + (n * step_size) for n in range(0, steps))
-
-calc_types = {
-    "blue": lambda x, v: v * sin(x),
-    "green": lambda x, v: v * cos(x),
-    "purple": lambda x, v: v + (x),
-    "yellow": lambda x, v: v - (x)
-}
-
-def calc_y(x, calc_type, foo, bar, baz):
-    calc = calc_types[calc_type]
-    v = (foo * sin(x)) * cos(bar * x) + baz
-    return calc(x, v)
