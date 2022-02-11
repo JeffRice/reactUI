@@ -1,7 +1,8 @@
-Implement a React app allowing a user to monitor long-running
-server-side calculations and start new ones. The calculations
-continuously update their values over time (on the server) until
-arriving at a final number. 
+Implement a React single-page-app that allows a user to monitor
+long-running server-side calculations and start new ones. The
+calculations continuously update their values over time (on the
+server) until arriving at a final number. The dashboard displays
+calculations' real-time values as the server updates them.
 
 # Installation - the server
 
@@ -37,12 +38,24 @@ calculations but will always provide a list of running calculations.
 
 # The UI
 
-The app consists of two "pages":
+The app consists of three "pages":
 
+1) A login page.
 1) the dashboard page, on which the user sees a list of running calculations
 and can start new ones. Some calculations are the user's, some are other users'.
 1) a calculation detail page, on which the user can view the intermediate values
 the calculation generated that led to its final value.
+
+# Login page
+
+The login page provides text fields for a "Username" and "Password"
+and a "Login" button. It calls the server's `/login` route, receiving
+in response a token representing the user's session. 
+
+The pawsword is `password`, and the server will return a 401 if the
+user provides any other password. The login page should display an
+error in this case. Otherwise the app should hold on to the user token
+and proceed to the Dashboard page.
 
 # Dashboard Page
 
@@ -70,7 +83,9 @@ be valid before submitting the form).
 
 The calculation list under the form shows a list of currently-running
 and recently-run calculations, and updates the list with data from the
-server once per second. 
+server once per second. Note that this solution does not involve
+websockets - the server just provides a route providing the current
+state of all calculations.
 
 The list lets the user watch how each calculation's value is evolving,
 and also lets them see if any calculations encounter errors.
@@ -95,9 +110,9 @@ calculations completes.
 Above the list, provide a toggle switch that toggles the list between
 displaying all calculations and only this user's calculations.
 
-Note that because the app does not include a login page or anything similar,
-if the user reloads the page it will not know on reload which calculations
-belong to this user. This is just a limitation of the assignment.
+The toggle switch will no longer work if you reload the page. As a
+bonus, modify the app such that on page reload it still knows which
+calculations belong to this user.
 
 ## Calculation Detail Page
 
@@ -121,14 +136,20 @@ functions created from the `foo`, `bar` and `baz` inputs.
 
 # Server endpoints
 
-The following are the endpoints provided by the server. The requests
+The following are the endpoints provided by the server. 
+
+All routes other than `/login` require that the request contain
+an `x-auth` header containing the user token returned by the
+`/login` route. Any request not including that header will 
+get a 401 HTTP response.
+
+The requests
 involving calculations represent a calculation with an object such as
 the following:
 
 ```
 {
   "id": "570b04b6-e88e-412a-9352-2c295b783351",
-  "username": "Fred",
   "type": "Blue",
   "foo": -3,
   "bar": 6,
@@ -166,6 +187,28 @@ For example:
 
 The server provides the following endpoints:
 
+## POST /login
+
+Authenticates the user and returns a user token to be submitted
+as an `x-auth` header on all subsequent requests.
+
+The content-type should be `application/json`, and the POST data
+is of the form:
+```
+{ "username": "fred", "password": "password" }
+```
+
+The only valid password is "password".
+
+Returns an HTTP 401 for an invalid password.
+
+For a valid password, returns HTTP 200 and the json response:
+```
+{ "token": "f8190cb3-8124-4372-9946-479a221662d9" }
+```
+containing the user's session token. All subsequent requests must include
+that token as an `x-auth` header.
+
 ## GET /calculations
 
 Returns a JSON array of currently-running and recently-run
@@ -191,7 +234,10 @@ following fields (shown in the "calculation" object shown above):
 All fields are required.
 
 This endpoint returns status 201 if it was able to start the calculation;
-the response data will be the new calculation's ID.
+the response data will be json of the form 
+```
+{ "id": "f8190cb3-8124-4372-9946-479a221662d9" }
+```
 
 The endpoint returns status 400 if the input was invalid, with the
 reason as the text of the response body.
