@@ -56,7 +56,7 @@ def create_app(machine: CalculationMachine, auth: bool = True):
         return jsonify([calc.summary(time=datetime.now()) for calc in machine.values()])
 
     @app.route('/calculations/<uuid>', methods=['GET'])
-    def get_detail(self, uuid):
+    def get_detail(uuid):
         authorize()
         if uuid not in machine:
             return log_and_return("Unknown Calculation ID", 404)
