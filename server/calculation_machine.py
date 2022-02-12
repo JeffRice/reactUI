@@ -30,7 +30,7 @@ class CalculationMachine(Mapping):
         self.other_user_calc_ids = []
 
     def __getitem__(self, uuid):
-        return self.calculatons[uuid]
+        return self.calculations[uuid]
 
     def __iter__(self):
         return iter(self.calculations)
