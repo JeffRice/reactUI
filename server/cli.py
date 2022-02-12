@@ -56,7 +56,7 @@ class ServerCli(cli.Application):
         for _ in range(self.seed):
             machine.add(Calculation.random())
 
-        app = create_app(machine=machine, auth=auth)
+        app = create_app(machine=machine, auth=self.auth)
         app.run(port=port)
         logging.info(f"Server listening on port {port}")
             
