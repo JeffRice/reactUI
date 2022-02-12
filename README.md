@@ -73,7 +73,7 @@ hide.
 
 - A row flashes when its calculation completes.
 
-- The UI remembers the user's login token when they refresh the page.
+- The UI remembers the user's login token when they refresh the page. 
 
 - The UI remembers the set of hidden calculations when the user refreshes the page.
   
@@ -98,7 +98,7 @@ A new calculation's inputs are:
 
 - Calculation: the type of calculation to perform: "Blue", "Green", "Purple", or "Yellow"
 - Foo: any integer from -10 to +10, inclusive (either a slider component or validated text field)
-- Bar: any number (a text field and validaiton that the user enters a valid number)
+- Bar: any number (a text field and validation that the user enters a valid number)
 - Baz: any number from 0 to 10, inclusive, (a slider component or a validated text field)
 
 ## The Calculation List <a name="the-calculation-list"></a> 
@@ -117,11 +117,10 @@ Each row in the calculation list should include the following:
 The server is a python 
 [flask](https://flask.palletsprojects.com/en/2.0.x/) app wrapped in a CLI, 
 and the CLI that starts the server takes some command-line options letting 
-you control aspects of the other simulated users, in case you find that useful
-while debugging your app. It also provides a `'--no-auth` option,
-which will let the UI call the server routes without a login.
+you control different aspects of its behavior that might be useful as you develop
+your app. 
 
-To run the server, make sure you have `python3` and `pip3` 
+To run the CLI, make sure you have `python3` and `pip3` 
 installed. You'll need at least python version 3.7.
 
 On Mac using [homebrew](https://brew.sh/):
@@ -132,13 +131,13 @@ $ brew install python3
 (the `$` represents the shell's command prompt).
 
 Note that Mac OS has Python 2 pre-installed, and this
-server will only work with Python 3. When running the server,
-for simplicity always specify `python3` instead of just `python`
+server will only work with Python 3. When running the CLI,
+for simplicity always specify `python3` instead of just `python`.
 
 In this directory, create a Python
 [virtualenv](https://docs.python.org/3/library/venv.html) and install
 the server's dependencies. All commands should be run from the
-project's root, i.e. the directory containing this README.md file.
+project's root, i.e. the directory containing this README.md file:
 
 ```
 $ python3 -m venv venv
@@ -212,7 +211,7 @@ For example, to turn off all simulated user behavior:
 $ python3 -m server.cli 5000 --other-other-freq=-1
 ```
 
-And to run the server without requiring a valid user auth token,
+And to run the server without requiring a login,
 ```
 $ python3 -m server.cli 5000 --no-auth
 ```
@@ -308,7 +307,7 @@ calculations to display, each of the form shown above.
 ## GET /calculations/<uuid>
 
 Returns a JSON object of the calculation with ID `<uuid>`. The object
-will beof the form above, and contain an extra property, `values`,
+will be of the form above, and contain an extra property, `values`,
 which is the list of intermediate values the calculation went
 through before arriving at its current value.
 
