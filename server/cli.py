@@ -29,6 +29,11 @@ class ServerCli(cli.Application):
                           default=5,
                           help="Number of running calculations to seed the machine with.")
 
+    auth = cli.Flag("--no-auth",
+                    default=True,
+                    help="Provide this to allow HTTP requests that do not include the"
+                    " user token returned from the /login route")
+    
     @cli.positional(int)
     def main(self, port: int):
 
@@ -51,7 +56,7 @@ class ServerCli(cli.Application):
         for _ in range(self.seed):
             machine.add(Calculation.random())
 
-        app = create_app(machine)
+        app = create_app(machine=machine, auth=auth)
         app.run(port=port)
         logging.info(f"Server listening on port {port}")
             

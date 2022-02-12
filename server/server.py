@@ -5,7 +5,7 @@ from flask import Flask, jsonify, request, abort
 from server.calculation import Calculation
 from server.calculation_machine import CalculationMachine
 
-def create_app(machine: CalculationMachine):
+def create_app(machine: CalculationMachine, auth: bool = True):
 
     app = Flask(__name__)
     user_token = None
@@ -13,11 +13,16 @@ def create_app(machine: CalculationMachine):
     
     def set_user_token(uuid):
         user_token = uuid
+
+    def user_token_header():
+        return request.headers.get('x-auth')
         
     def authorize():
-        if 'x-auth' not in request.headers:
+        if not auth:
+            return        
+        if not user_token_header():
             abort(400)
-        if request.headers['x-auth'] != user_token:
+        if user_token_header() != user_token:
             abort(401)
 
     def is_user_calc_id(uuid):
@@ -32,6 +37,11 @@ def create_app(machine: CalculationMachine):
 
     @app.route('/login', methods=['POST'])
     def login():
+
+        if not auth:
+            logging.error("To call the /login route, restart the server without the --no-auth option.")
+            return "To call the /login route, restart the server without the --no-auth option.", 400
+
         params = request.get_json()
         if not (params.get('username') and params.get('password')):
             return log_and_return("Posted json must contain a `username` and `password`", 400)
@@ -59,6 +69,7 @@ def create_app(machine: CalculationMachine):
         if params.id:
             return log_and_return("You cannot provide an ID for a new calculation", 400)
         calc = Calculation.create(
+            user_id=user_token_header(),
             inputs=py_.pick(params, 'foo', 'bar', 'baz', 'calc_type')
         )
         calculations.add(calc)

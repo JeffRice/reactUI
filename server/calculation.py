@@ -68,7 +68,8 @@ class Calculation:
     cancelled_at: datetime = field(default=None)
 
     @staticmethod
-    def create(inputs: dict,
+    def create(user_id: str,
+               inputs: dict,
                started_at: datetime = datetime.now(),
                values_per_second: int = 100,
                xs = calc_xs(),
@@ -84,6 +85,7 @@ class Calculation:
     @staticmethod
     def random():        
         return Calculation.create(
+            user_id=uuid4(),
             inputs={
                 'calc_type': random.choice(list(calc_types.keys())),
                 'foo': random.randint(-10, 10),
