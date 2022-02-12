@@ -16,10 +16,13 @@ def create_app(machine: CalculationMachine, auth: bool = True):
 
     def user_token_header():
         return request.headers.get('x-auth')
-        
+
+    @app.before_request
     def authorize():
         if not auth:
-            return        
+            return
+        if request.path == "/login":
+            return;
         if not user_token_header():
             abort(400)
         if user_token_header() != user_token:
@@ -52,19 +55,16 @@ def create_app(machine: CalculationMachine, auth: bool = True):
 
     @app.route('/calculations', methods=['GET'])
     def list():
-        authorize()
         return jsonify([calc.summary(time=datetime.now()) for calc in machine.values()])
 
     @app.route('/calculations/<uuid>', methods=['GET'])
     def get_detail(uuid):
-        authorize()
         if uuid not in machine:
             return log_and_return("Unknown Calculation ID", 404)
         return machine[uuid].detail(time=datetime.now())
 
     @app.route('/calculations', methods=['POST'])
     def start():
-        authorize()
         params = request.get_json()
         if params.id:
             return log_and_return("You cannot provide an ID for a new calculation", 400)
@@ -79,7 +79,6 @@ def create_app(machine: CalculationMachine, auth: bool = True):
 
     @app.route('/calculation/<uuid>/cancel', methods=['PATCH'])
     def cancel(uuid):
-        authorize()
 
         if not is_user_calc_id(uuid):
             return log_and_return("Unknown calculation ID, or ID does not belong to this user.", 400)
