@@ -40,8 +40,8 @@ around one or two of the features implemented.
   server's `/login` route and goes to the single-page-app's dashboard
   page. Note that the login form is not necessary to develop the other
   features of the app - when you start the server with a `--no-auth`
-  command-line option, the server's routes do no require a logged-in
-  user's user token.
+  command-line option, the server's routes do not require a 
+  valid user token.
   
 - A dashboard page that queries the server for the current set of
   running calculations and displays them in a list, described in more
@@ -108,7 +108,7 @@ Each row in the calculation list should include the following:
 - the inputs of the calculation, listed above under "New Calculation Form"
 - the calculation's current value 
 - an indication of the calculation's progress to completion (a progress bar or text percentage)
-- the calculation's state, one of `Running`, `Cancelled`, or `Completed`.
+- the calculation's state, one of `Running`, `Completed`, `Cancelled` or `Errored`.
 - a "Cancel" button that notifies the server to cancel the calculation
 - a "Hide" button that toggles the row's inclusion in the user's hidden calculation list
 
@@ -122,7 +122,7 @@ while debugging your app. It also provides a `'--no-auth` option,
 which will let the UI call the server routes without a login.
 
 To run the server, make sure you have `python3` and `pip3` 
-installed. You'll need at least pyton version 3.7.
+installed. You'll need at least python version 3.7.
 
 On Mac using [homebrew](https://brew.sh/):
 ```
@@ -200,7 +200,7 @@ calculations to display.
 
 To control the simulated users' behavior to facilitate debugging,
 e.g. speed them up, slow them down, turn them off, and to turn off the
-simulatederrors, you can provide command-line switches. To see the
+simulated errors, you can provide command-line switches. To see the
 CLI's command-line options, do: 
 ``` 
 $ python3 -m server.cli -h 
@@ -209,7 +209,12 @@ That will display help output.
 
 For example, to turn off all simulated user behavior:
 ```
-$ python3 -m server.cli --other-other-freq=-1
+$ python3 -m server.cli 5000 --other-other-freq=-1
+```
+
+And to run the server without requiring a valid user auth token,
+```
+$ python3 -m server.cli 5000 --no-auth
 ```
 
 If you have any trouble getting the server running feel free to
