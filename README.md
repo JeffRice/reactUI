@@ -89,7 +89,7 @@ hide.
 - The calculation detail view queries the server once per second,
   updating the graph and letting the user watch its progress.
 
-## <a name="new-calculation-form"> New Calculation Form
+## <a name="new-calculation-form"/> New Calculation Form
 
 The dashboard page lets the user start a new calculation using a form,
 either at the top of the page or in a modal dialog.
@@ -101,7 +101,7 @@ A new calculation's inputs are:
 - Bar: any number (a text field and validaiton that the user enters a valid number)
 - Baz: any number from 0 to 10, inclusive, (a slider component or a validated text field)
 
-## <a name="the-calculation-list"> The Calculation List
+## <a name="the-calculation-list"/> The Calculation List
 
 Each row in the calculation list should include the following:
 
