@@ -1,83 +1,75 @@
-eIQ Mobility Frontend Software Engineer Take-Home Project
+# eIQ Mobility Frontend Software Engineer Take-Home Project
 
 Thank you for taking the time to do this take-home project.  We've
-designed it to hopefully be fun to work on, and to provide a
-number of options as to how many features of it you implement, depending
-on your experience with React and how much time you have to devote to it.
+designed it to be fun to work on, and to provide a number of options
+as to how many features of it you implement, depending on your
+experience with React and how much time you have to devote to it.
 
 For this assignment, you'll implement a [React](https://reactjs.org/)
 single-page-app, providing a dashboard that lets a user manage a set
-of calculations running on the server. When you submit your project,
-please include instructions on how to run it, and let us know which
-features you implemented.
+of calculations running on the server. You may use any other
+libraries you like in implementing it.
 
-Included in this repo is a server that manages a set of
-long-running calculations. It provides HTTP routes letting 
-a client start a new calculation, cancel a running calculation,
-get the current set of running calculations, and get the details
-of a particular calculation, including the values it has calculated so far
-as it derives its final value. 
+# The Provided Server
+
+Included in this repo is a server that manages a set of long-running
+calculations. It provides HTTP routes letting a client start a new
+calculation, cancel a running calculation, get the current set of
+running calculations, and get the details of a particular calculation,
+including the values it has calculated so far as it "converges" on its final
+value.
 
 The server also simulates other users running and cancelling their own
 calculations, and simulates random occasional errors.
 
-See the section [Installing the server](#installing-the-server)
+See the section below, [Installing the server](#installing-the-server)
 for instructions on running the server, 
 and the section [Server Routes](#server-routes), for details
 of its HTTP API.
 
-Also, as you read through the description of the UI, note that you can
-start the server with a `--no-auth` option, which will let the client
-call its routes without a user token, though one of the potential
-features to implement is a login form which will provide that token.
+# UI Features
 
-# The UI
+The following are all potential features of this app's UI. 
+Implement as many features as you have time for - we do not
+expect all candidates to implement all of the features.
 
-The following are all potential features of this app's UI, implemented
-as a single-page React app. None of these features is intended to be
-particularly tricky for an expert React developer, but for a less
-experienced React developer might require a bit of googling and
-learning. Implement as many features as you have time for - we do not
-expect all candidates to implement all of the features below.
-
-If time allows, we would also love to see tests,
-using the [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/), 
+If time allows, we would also love to see tests
 around one or two of the features implemented.
 
-## Features
-
-A menu of features to implement:
-
-- A login form with username and password.
-
+- A login form with username and password. Submitting it calls the
+  server's `/login` route and goes to the single-page-app's dashboard
+  page. Note that the login form is not necessary to develop the other
+  features of the app - when you start the server with a `--no-auth`
+  command-line option, the server's routes do no require a logged-in
+  user's user token.
+  
 - A dashboard page that queries the server for the current set of
-running calculations and displays them in a list, described in more 
-detail in a section below.
+  running calculations and displays them in a list, described in more
+  detail below under [The Calculation List](#the-calculation-list).
 
-- The dashboard list continuously updates by querying the server
-once per second. 
+- The dashboard list continuously updates by querying the server once
+  per second.
 
 - The user can submit a new calculation that then displays in the list
-(if the dashboard is updating once per second, the new one
-can just show up in the list on the next poll).
+  (if the dashboard is updating once per second, the new one
+  can just show up in the list on the next poll).
 
 - The list visually distinguishes a row by its current state, one
-of "Running", "Completed", "Cancelled", or "Errored" (each row should also
-include its state as text).
+  of "Running", "Completed", "Cancelled", or "Errored".
 
 - The list visually distinguishes calculations started by the current user
-and those started by other users.
+  from those started by other users.
 
 - The user can toggle whether they see all calculations in the list
-or just their own, using a toggle switch component.
+  or just their own, using a toggle switch component.
 
 - The user can cancel a calculation, stopping it running on the server.
 
 - The user can hide a calculation from view.
 
 - The user can toggle a switch to show all hidden calculations, and then
-toggle it again to hide them again (without reselecting which to
-hide).
+toggle it again to hide them again without reselecting which to
+hide.
 
 - A row flashes when its calculation completes.
 
@@ -86,18 +78,18 @@ hide).
 - The UI remembers the set of hidden calculations when the user refreshes the page.
   
 - Clicking a calculation goes to a detail page, or displays a modal
-dialog, displaying that calculation's detail view. The detail view
-displays the calculation's inputs, and its intermediate values
-calculated up to the current time as a graph, for example a linechart
-rendered using
-[d3](https://www.d3-graph-gallery.com/graph/line_basic.html).  Note
-that React and d3 require a bit of code to play nicely
-together. 
+  dialog, displaying that calculation's detail view. The detail view
+  displays the calculation's inputs, and its intermediate values
+  calculated up to the current time as a graph, for example a linechart
+  rendered using
+  [d3](https://www.d3-graph-gallery.com/graph/line_basic.html).  Note
+	that React and d3 require a bit of code to play nicely
+	together. 
 
 - The calculation detail view queries the server once per second,
-updating the graph and letting the user watch its progress.
+  updating the graph and letting the user watch its progress.
 
-## New Calculation Form
+## <a name="new-calculation-form"> New Calculation Form
 
 The dashboard page lets the user start a new calculation using a form,
 either at the top of the page or in a modal dialog.
@@ -109,24 +101,18 @@ A new calculation's inputs are:
 - Bar: any number (a text field and validaiton that the user enters a valid number)
 - Baz: any number from 0 to 10, inclusive, (a slider component or a validated text field)
 
-## The Calculation List
+## <a name="the-calculation-list"> The Calculation List
 
 Each row in the calculation list should include the following:
 
 - the inputs of the calculation, listed above under "New Calculation Form"
 - the calculation's current value 
-- an indication of the calculation's progress (a progress bar or text percentage)
+- an indication of the calculation's progress to completion (a progress bar or text percentage)
 - the calculation's state, one of `Running`, `Cancelled`, or `Completed`.
 - a "Cancel" button that notifies the server to cancel the calculation
 - a "Hide" button that toggles the row's inclusion in the user's hidden calculation list
 
-## Calculation Detail 
-
-Clicking a calculation in the list (other than its "Cancel" and "Hide"
-buttons) displays the calculation's `values` list, as a list or graph,
-ideally updating it once per second with data from the server.
-
-# Installing the server 
+# <a name="installing-the-server"/> Installing the server 
 
 The server is a python 
 [flask](https://flask.palletsprojects.com/en/2.0.x/) app wrapped in a CLI, 
@@ -229,7 +215,7 @@ $ python3 -m server.cli --other-other-freq=-1
 If you have any trouble getting the server running feel free to
 contact us for help.
 
-# Server Routes
+# <a name="server-routes"/> Server Routes
 
 The requests involving calculations will represent a calculation with an
 object such as the following:
