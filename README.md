@@ -101,7 +101,7 @@ A new calculation's inputs are:
 - Bar: any number (a text field and validaiton that the user enters a valid number)
 - Baz: any number from 0 to 10, inclusive, (a slider component or a validated text field)
 
-## The Calculation List <a name="the-calculation-list">/<a> 
+## The Calculation List <a name="the-calculation-list"></a> 
 
 Each row in the calculation list should include the following:
 
