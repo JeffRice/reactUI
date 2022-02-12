@@ -89,7 +89,7 @@ hide.
 - The calculation detail view queries the server once per second,
   updating the graph and letting the user watch its progress.
 
-## <a name="new-calculation-form"/> New Calculation Form
+## New Calculation Form <a name="new-calculation-form"/> 
 
 The dashboard page lets the user start a new calculation using a form,
 either at the top of the page or in a modal dialog.
@@ -101,7 +101,7 @@ A new calculation's inputs are:
 - Bar: any number (a text field and validaiton that the user enters a valid number)
 - Baz: any number from 0 to 10, inclusive, (a slider component or a validated text field)
 
-## <a name="the-calculation-list"/> The Calculation List
+## The Calculation List <a name="the-calculation-list"/> 
 
 Each row in the calculation list should include the following:
 
@@ -112,7 +112,7 @@ Each row in the calculation list should include the following:
 - a "Cancel" button that notifies the server to cancel the calculation
 - a "Hide" button that toggles the row's inclusion in the user's hidden calculation list
 
-# <a name="installing-the-server"/> Installing the server 
+# Installing the server <a name="installing-the-server"/>
 
 The server is a python 
 [flask](https://flask.palletsprojects.com/en/2.0.x/) app wrapped in a CLI, 
@@ -220,7 +220,7 @@ $ python3 -m server.cli 5000 --no-auth
 If you have any trouble getting the server running feel free to
 contact us for help.
 
-# <a name="server-routes"/> Server Routes
+# Server Routes <a name="server-routes"/> 
 
 The requests involving calculations will represent a calculation with an
 object such as the following:
