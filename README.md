@@ -343,3 +343,9 @@ of their own calculations (or any calculation if the server was
 started with `--no-auth`). If the calculation has already finished,
 errored or been cancelled, the cancel request will have no effect.
 
+# Good Luck!
+
+We hope you enjoy developing the UI. Let us know if you run into any
+issues with the server - we have tested it but let us know if you
+encounter any issues with it. We look forward to reviewing your
+project. Good luck!
