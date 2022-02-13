@@ -191,9 +191,9 @@ class TestInputValidation:
     
     def test_cancel_invalid_uuid(self, client_no_auth):
         _create(client_no_auth, { 'calc_type': 'blue', 'foo': -3, 'bar': 1, 'baz': 4 })
-        assert _cancel(client_no_auth, uuid4()) == 404
+        assert _cancel(client_no_auth, uuid4()).status_code == 404
 
     def test_detail_invalid_uuid(self, client_no_auth):
         _create(client_no_auth, { 'calc_type': 'blue', 'foo': -3, 'bar': 1, 'baz': 4 })
-        assert _get_detail(client_no_auth, uuid4()) == 404
+        assert _get_detail(client_no_auth, uuid4()).status_code == 404
     

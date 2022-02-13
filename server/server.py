@@ -3,7 +3,7 @@ from uuid import uuid4
 from datetime import datetime
 from flask import Flask, jsonify, request, abort
 from pydash import py_
-from server.calculation import Calculation
+from server.calculation import Calculation, calc_types
 from server.calculation_machine import CalculationMachine
 
 def create_app(machine: CalculationMachine, auth: bool = True):
@@ -46,6 +46,29 @@ def create_app(machine: CalculationMachine, auth: bool = True):
         logging.info(f"Returning status {status}: {msg}")
         return msg, status
 
+    def validate_input(condition, description):
+        if not condition:
+            abort(description, 400)
+
+    def require_input(input, name):
+        validate_input(name in input, f"Input must include `{name}`")
+
+    def require_inputs(input, names):
+        for name in names:
+            require_input(input, name)
+
+    def require_valid_int(name, s):
+        try:
+            int(s)
+        except ValueError:
+            abort(f"`{name}` must be a valid integer")
+
+    def require_valid_number(name, s):
+        try:
+            float(s)
+        except ValueError:
+            abort(f"`{name}` must be a valid number")
+            
     @app.route('/login', methods=['POST'])
     def login():
 
@@ -77,10 +100,36 @@ def create_app(machine: CalculationMachine, auth: bool = True):
         params = request.get_json()
         if params.get('id'):
             return log_and_return("You cannot provide an ID for a new calculation", 400)
+
+        # todo: is there a simple schema library I can use?
+        
+        require_inputs(params, ['calc_type', 'foo', 'bar', 'baz'])
+
+        calc_type = params['calc_type'].lower()
+        validate_input(calc_type in calc_types,
+                       f"{calc_type} must be a valid calculation type, one of blue, green, purple or yellow")
+
+        require_valid_int('foo', params['foo'])
+        foo = int(params['foo'])
+        validate_input(foo >= 10 and foo <= 10,
+                       f"`foo` must be an integer from -10 to 10, inclusive")
+
+        require_valid_number('bar', params['bar'])
+        bar = float(params['bar'])
+
+        require_valid_number('baz', params['baz'])
+        baz = float(params['baz'])
+        validate_input(baz >= 0 and baz <= 10,
+                       "`baz` must be a valid number from 0 to 10, inclusive")
+        
         calc = Calculation.create(
             user_id=user_token_header(),
-            inputs=py_.pick(params, 'foo', 'bar', 'baz', 'calc_type')
+            calc_type=calc_type,
+            foo=foo,
+            bar=bar,
+            baz=baz
         )
+
         machine.add(calc)
         if user_token_header() == user_token:
             user_calc_ids.add(calc.id)
@@ -88,9 +137,8 @@ def create_app(machine: CalculationMachine, auth: bool = True):
 
     @app.route('/calculations/<uuid>/cancel', methods=['PATCH'])
     def cancel(uuid):
-
         if not is_user_calc_id(uuid):
-            return log_and_return("Unknown calculation ID, or ID does not belong to this user.", 400)
+            return log_and_return("Unknown calculation ID, or ID does not belong to this user.", 404)
 
         machine.cancel(uuid)
         return f"Cancelled {uuid}", 200
