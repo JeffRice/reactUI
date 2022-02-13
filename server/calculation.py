@@ -31,7 +31,7 @@ def calc_y(x, calc_type, foo, bar, baz):
     """Some visually interesting functions, 
     should the candidate be curious to visualize them
     """
-    calc = calc_types[calc_type]
+    calc = calc_types[calc_type.lower()]
     v = (foo * sin(x)) * cos(bar * x) + baz
     return calc(x, v)
 

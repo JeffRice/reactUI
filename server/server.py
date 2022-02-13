@@ -82,9 +82,7 @@ def create_app(machine: CalculationMachine, auth: bool = True):
             inputs=py_.pick(params, 'foo', 'bar', 'baz', 'calc_type')
         )
         machine.add(calc)
-        return {
-            id: calc.id
-        }
+        return jsonify({ 'id': calc.id }), 201
 
     @app.route('/calculation/<uuid>/cancel', methods=['PATCH'])
     def cancel(uuid):
