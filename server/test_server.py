@@ -87,9 +87,13 @@ class TestLogin:
 
         
 class TestAuth:
-        
+
+    def test_requires_auth_header(self, client_no_login):
+        assert _get_list(client_no_login).status_code == 400
+    
     def test_authorizes(self, client_no_login):
-        assert _get_list(client_no_login).status_code == 401
+        response = client_no_login.get('/calculations', headers={ 'x-auth': str(uuid4()) })
+        assert response.status_code == 401
 
     def test_no_auth_mode(self, client_no_auth):
         assert _get_list(client_no_auth).status_code == 200
