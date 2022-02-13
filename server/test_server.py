@@ -61,7 +61,7 @@ def _create(client, data):
     return client.post("/calculations", data=json.dumps(data), content_type='application/json')
 
 def _cancel(client, uuid):
-    return client.patch(f"/calculations/{uuid}")
+    return client.patch(f"/calculations/{uuid}/cancel")
 
 
 class TestLogin:
@@ -113,16 +113,19 @@ class TestOperations:
 
         calcs = _get_list(client_with_login).get_json()
         assert len(calcs) == 1
-        assert py_.pick(calcs[0], 'calc_type', 'foo', 'bar', 'baz', 'started_at') == calc
-        assert calcs[0] == calc_id
+        assert py_.pick(calcs[0], 'calc_type', 'foo', 'bar', 'baz') == calc
+        assert calcs[0]['id'] == calc_id
         assert calcs[0]['mine']
+        assert bool(calcs[0]['started_at'])
         assert not bool(calcs[0]['error'])
         assert not bool(calcs[0]['cancelled_at'])
         assert not bool(calcs[0]['completed_at'])
 
         time.sleep(1)
-        detail = _get_detail(client_with_login, calc_id).get_json()
-        assert py_.pick(calcs[0], 'calc_type', 'foo', 'bar', 'baz', 'started_at') == calc
+        detail_response = _get_detail(client_with_login, calc_id)
+        assert detail_response.status_code == 200
+        detail = detail_response.get_json()
+        assert py_.pick(calcs[0], 'calc_type', 'foo', 'bar', 'baz') == calc
         assert detail['id'] == calc_id
         assert detail['mine']
         values = detail['values']
@@ -131,7 +134,7 @@ class TestOperations:
         cancellation = _cancel(client_with_login, calc_id)
         assert cancellation.status_code == 200
 
-        list_after_cancel = _get_list(client_with_login, calc_id).get_json()
+        list_after_cancel = _get_list(client_with_login).get_json()
         assert bool(list_after_cancel[0]['cancelled_at'])
         assert not list_after_cancel[0]['completed_at']
 

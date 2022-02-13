@@ -31,7 +31,7 @@ def create_app(machine: CalculationMachine, auth: bool = True):
             abort(401)
 
     def hide_user(calc):
-        return py_omit({
+        return py_.omit({
             **calc,
             'mine': calc['user_id'] == user_token
         }, 'user_id')
@@ -70,7 +70,7 @@ def create_app(machine: CalculationMachine, auth: bool = True):
     def get_detail(uuid):
         if uuid not in machine:
             return log_and_return("Unknown Calculation ID", 404)
-        return hide_user(machine[uuid].detail(time=datetime.now()))
+        return jsonify(hide_user(machine[uuid].detail(time=datetime.now())))
 
     @app.route('/calculations', methods=['POST'])
     def start():
@@ -82,15 +82,17 @@ def create_app(machine: CalculationMachine, auth: bool = True):
             inputs=py_.pick(params, 'foo', 'bar', 'baz', 'calc_type')
         )
         machine.add(calc)
+        if user_token_header() == user_token:
+            user_calc_ids.add(calc.id)
         return jsonify({ 'id': calc.id }), 201
 
-    @app.route('/calculation/<uuid>/cancel', methods=['PATCH'])
+    @app.route('/calculations/<uuid>/cancel', methods=['PATCH'])
     def cancel(uuid):
 
         if not is_user_calc_id(uuid):
             return log_and_return("Unknown calculation ID, or ID does not belong to this user.", 400)
 
         machine.cancel(uuid)
-        return 200
+        return f"Cancelled {uuid}", 200
 
     return app

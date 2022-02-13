@@ -54,6 +54,8 @@ class Calculation:
     """
     id: UUID
 
+    user_id: UUID
+
     started_at: datetime
 
     inputs: dict
@@ -75,7 +77,8 @@ class Calculation:
                xs = calc_xs(),
                calc_y = calc_y):
         values = [calc_y(x, **inputs) for x in xs]
-        return Calculation(id=uuid4(),
+        return Calculation(id=str(uuid4()),
+                           user_id=user_id,
                            started_at=started_at,
                            inputs=inputs,
                            values=values,
@@ -85,7 +88,7 @@ class Calculation:
     @staticmethod
     def random():        
         return Calculation.create(
-            user_id=uuid4(),
+            user_id=str(uuid4()),
             inputs={
                 'calc_type': random.choice(list(calc_types.keys())),
                 'foo': random.randint(-10, 10),
@@ -141,7 +144,7 @@ class Calculation:
 
     @property
     def time_to_calculate(self):
-        return max_seconds
+        return random.randint(10, 60)
 
     def completed_at(self, time):
         would_complete_at = self.started_at + timedelta(seconds=self.time_to_calculate)
