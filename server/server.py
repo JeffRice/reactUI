@@ -45,29 +45,6 @@ def create_app(machine: CalculationMachine, auth: bool = True):
     def log_and_return(msg, status):
         logging.info(f"Returning status {status}: {msg}")
         return msg, status
-
-    def validate_input(condition, description):
-        if not condition:
-            abort(description, 400)
-
-    def require_input(input, name):
-        validate_input(name in input, f"Input must include `{name}`")
-
-    def require_inputs(input, names):
-        for name in names:
-            require_input(input, name)
-
-    def require_valid_int(name, s):
-        try:
-            int(s)
-        except ValueError:
-            abort(f"`{name}` must be a valid integer")
-
-    def require_valid_number(name, s):
-        try:
-            float(s)
-        except ValueError:
-            abort(f"`{name}` must be a valid number")
             
     @app.route('/login', methods=['POST'])
     def login():
@@ -77,6 +54,7 @@ def create_app(machine: CalculationMachine, auth: bool = True):
             return "To call the /login route, restart the server without the --no-auth option.", 400
 
         params = request.get_json()
+        # todo: validate with marshmalow
         if not (params.get('username') and params.get('password')):
             return log_and_return("Posted json must contain a `username` and `password`", 400)
         if params['password'] != 'password':
@@ -98,36 +76,15 @@ def create_app(machine: CalculationMachine, auth: bool = True):
     @app.route('/calculations', methods=['POST'])
     def start():
         params = request.get_json()
-        if params.get('id'):
-            return log_and_return("You cannot provide an ID for a new calculation", 400)
 
-        # todo: is there a simple schema library I can use?
-        
-        require_inputs(params, ['calc_type', 'foo', 'bar', 'baz'])
-
-        calc_type = params['calc_type'].lower()
-        validate_input(calc_type in calc_types,
-                       f"{calc_type} must be a valid calculation type, one of blue, green, purple or yellow")
-
-        require_valid_int('foo', params['foo'])
-        foo = int(params['foo'])
-        validate_input(foo >= 10 and foo <= 10,
-                       f"`foo` must be an integer from -10 to 10, inclusive")
-
-        require_valid_number('bar', params['bar'])
-        bar = float(params['bar'])
-
-        require_valid_number('baz', params['baz'])
-        baz = float(params['baz'])
-        validate_input(baz >= 0 and baz <= 10,
-                       "`baz` must be a valid number from 0 to 10, inclusive")
+        # todo validate with marshmallow
         
         calc = Calculation.create(
             user_id=user_token_header(),
-            calc_type=calc_type,
-            foo=foo,
-            bar=bar,
-            baz=baz
+            calc_type=params['calc_type'].lower(),
+            foo=int(params['foo']),
+            bar=float(params['bar']),
+            baz=float(params['baz'])
         )
 
         machine.add(calc)
