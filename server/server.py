@@ -13,7 +13,8 @@ def create_app(machine: CalculationMachine, auth: bool = True):
     user_calc_ids = set()
     
     def set_user_token(uuid):
-        user_token = uuid
+        nonlocal user_token
+        user_token = str(uuid)
 
     def user_token_header():
         return request.headers.get('x-auth')
@@ -74,13 +75,13 @@ def create_app(machine: CalculationMachine, auth: bool = True):
     @app.route('/calculations', methods=['POST'])
     def start():
         params = request.get_json()
-        if params.id:
+        if params.get('id'):
             return log_and_return("You cannot provide an ID for a new calculation", 400)
         calc = Calculation.create(
             user_id=user_token_header(),
             inputs=py_.pick(params, 'foo', 'bar', 'baz', 'calc_type')
         )
-        calculations.add(calc)
+        machine.add(calc)
         return {
             id: calc.id
         }
