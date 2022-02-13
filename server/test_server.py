@@ -1,4 +1,6 @@
 import pytest
+import time
+from uuid import uuid4
 from contextlib import contextmanager
 from server.server import create_app
 
@@ -89,7 +91,97 @@ class TestAuth:
     def test_no_auth_mode(client_no_auth):
         assert _get_list(client_no_auth).status_code == 200
 
-    
-def test_operations(client_with_login):
-    pass
 
+class TestOperations:
+    
+    def test_operations(client_with_login):
+        calc = {
+            'calc_type': 'Blue',
+            'foo': -3,
+            'bar': 12,
+            'baz': 4
+        }
+
+        created = _create(client_with_login, calc).get_json()
+        calc_id = created['id']
+        assert bool(calc_id)
+
+        calcs = _get_list(client_with_login).get_json()
+        assert len(calcs) == 1
+        assert py_.pick(calcs[0], 'calc_type', 'foo', 'bar', 'baz', 'started_at') == calc
+        assert calcs[0] == calc_id
+        assert calcs[0]['mine']
+        assert not bool(calcs[0]['error'])
+        assert not bool(calcs[0]['cancelled_at'])
+        assert not bool(calcs[0]['completed_at'])
+
+        time.sleep(1)
+        detail = _get_detail(client_with_login, calc_id).get_json()
+        assert py_.pick(calcs[0], 'calc_type', 'foo', 'bar', 'baz', 'started_at') == calc
+        assert detail['id'] == calc_id
+        assert detail['mine']
+        values = detail['values']
+        assert values and len(values) < 500
+
+        cancellation = _cancel(client_with_login, calc_id)
+        assert cancellation.status_code == 200
+
+        list_after_cancel = _get_list(client_with_login, calc_id).get_json()
+        assert bool(list_after_cancel[0]['cancelled_at'])
+        assert not list_after_cancel[0]['completed_at']
+
+        detail_after_cancel = _get_detail(client_with_login, calc_id).get_json()
+        assert bool(detail_after_cancel['cancelled_at'])
+        assert not detail_after_cancel['completed_at']
+        assert len(detail_after_cancel['values']) < 500
+
+    def test_cancel_is_idempotent(client_with_login):
+
+        calc = {
+            'calc_type': 'Blue',
+            'foo': -3,
+            'bar': 12,
+            'baz': 4
+        }
+
+        created = _create(client_with_login, calc).get_json()
+        calc_id = created['id']
+
+        assert _cancel(client_with_login, calc_id).status_code == 200
+        assert _cancel(client_with_login, calc_id).status_code == 200
+
+
+def _test_input_validation(client, name, invalid_value):
+    valid_calc = { 'calc_type': 'blue', 'foo': -3, 'bar': 1, 'baz': 4 }
+
+    missing_name = py_.omit(valid_calc, name)
+    assert _create(client, missing_name) == 400
+
+    with_invalid_value = { **valid_calc, name : invalid_value }
+    assert _create(client, with_invalid_value) == 400
+        
+        
+class TestInputValidation:
+    
+    def test_calc_type(client_no_auth):
+        _test_input_validation(client_no_auth, name='calc_type', invalid_value='mango')
+    
+    def test_foo(client_no_auth):
+        _test_input_validation(client_no_auth, name='foo', invalid_value='horse')
+        _test_input_validation(client_no_auth, name='foo', invalid_value=-13)
+
+    def test_bar(client_no_auth):
+        _test_input_validation(client_no_auth, name='bar', invalid_value='otter')
+    
+    def test_baz(client_no_auth):
+        _test_input_validation(client_no_auth, name='baz', invalid_value='whale')
+        _test_input_validation(client_no_auth, name='baz', invalid_value=12)
+    
+    def test_cancel_invalid_uuid(client_no_auth):
+        _create(client_no_auth, { 'calc_type': 'blue', 'foo': -3, 'bar': 1, 'baz': 4 })
+        assert _cancel(client_no_auth, uuid4()) == 404
+
+    def test_detail_invalid_uuid(client_no_auth):
+        _create(client_no_auth, { 'calc_type': 'blue', 'foo': -3, 'bar': 1, 'baz': 4 })
+        assert _get_detail(client_no_auth, uuid4()) == 404
+    

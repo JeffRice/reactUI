@@ -2,6 +2,7 @@ import logging
 from uuid import uuid4
 from datetime import datetime
 from flask import Flask, jsonify, request, abort
+from pydash import py_
 from server.calculation import Calculation
 from server.calculation_machine import CalculationMachine
 
@@ -27,6 +28,12 @@ def create_app(machine: CalculationMachine, auth: bool = True):
             abort(400)
         if user_token_header() != user_token:
             abort(401)
+
+    def hide_user(calc):
+        return py_omit({
+            **calc,
+            'mine': calc['user_id'] == user_token
+        }, 'user_id')
 
     def is_user_calc_id(uuid):
         return uuid in user_calc_ids
@@ -55,13 +62,14 @@ def create_app(machine: CalculationMachine, auth: bool = True):
 
     @app.route('/calculations', methods=['GET'])
     def list():
-        return jsonify([calc.summary(time=datetime.now()) for calc in machine.values()])
+        calcs = [calc.summary(time=datetime.now()) for calc in machine.values()]
+        return jsonify([hide_user(c) for c in calcs])
 
     @app.route('/calculations/<uuid>', methods=['GET'])
     def get_detail(uuid):
         if uuid not in machine:
             return log_and_return("Unknown Calculation ID", 404)
-        return machine[uuid].detail(time=datetime.now())
+        return hide_user(machine[uuid].detail(time=datetime.now()))
 
     @app.route('/calculations', methods=['POST'])
     def start():
