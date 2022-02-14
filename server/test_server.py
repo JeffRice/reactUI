@@ -167,10 +167,10 @@ def _test_input_validation(client, name, invalid_value):
     valid_calc = { 'calc_type': 'blue', 'foo': -3, 'bar': 1, 'baz': 4 }
 
     missing_name = py_.omit(valid_calc, name)
-    assert _create(client, missing_name) == 400
+    assert _create(client, missing_name).status_code == 400
 
     with_invalid_value = { **valid_calc, name : invalid_value }
-    assert _create(client, with_invalid_value) == 400
+    assert _create(client, with_invalid_value).status_code == 400
         
         
 class TestInputValidation:

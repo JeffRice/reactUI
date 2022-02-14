@@ -6,6 +6,21 @@ from pydash import py_
 from server.calculation import Calculation, calc_types
 from server.calculation_machine import CalculationMachine
 
+from marshmallow import Schema, fields
+
+
+class LoginInputSchema(Schema):
+    username = fields.Str(required=True)
+    password = fields.Str(required=True)
+
+    
+class CreateCalcInputSchema(Schema):
+    calc_type = fields.Str(required=True, validate=lambda s: s.lower() in calc_types)
+    foo = fields.Int(required=True, validate=lambda n: -10 <= n and n <= 10)
+    bar = fields.Float(required=True)
+    baz = fields.Float(required=True, validate=lambda n: 0 <= n and n <= 10)
+
+
 def create_app(machine: CalculationMachine, auth: bool = True):
 
     app = Flask(__name__)
@@ -54,12 +69,16 @@ def create_app(machine: CalculationMachine, auth: bool = True):
             return "To call the /login route, restart the server without the --no-auth option.", 400
 
         params = request.get_json()
-        # todo: validate with marshmalow
-        if not (params.get('username') and params.get('password')):
-            return log_and_return("Posted json must contain a `username` and `password`", 400)
+
+        errors = LoginInputSchema().validate(params)
+        if errors:
+            abort(400, str(errors))
+
         if params['password'] != 'password':
             return log_and_return("Invalid credentials", 401)
+
         set_user_token(uuid4())
+
         return { "token": user_token }
 
     @app.route('/calculations', methods=['GET'])
@@ -77,15 +96,18 @@ def create_app(machine: CalculationMachine, auth: bool = True):
     def start():
         params = request.get_json()
 
-        # todo validate with marshmallow
+        errors = CreateCalcInputSchema().validate(params)
+        if errors:
+            abort(400, str(errors))
         
         calc = Calculation.create(
             user_id=user_token_header(),
-            calc_type=params['calc_type'].lower(),
-            foo=int(params['foo']),
-            bar=float(params['bar']),
-            baz=float(params['baz'])
-        )
+            inputs = {
+                'calc_type': params['calc_type'].lower(),
+                'foo': int(params['foo']),
+                'bar': float(params['bar']),
+                'baz': float(params['baz'])
+            })
 
         machine.add(calc)
         if user_token_header() == user_token:
