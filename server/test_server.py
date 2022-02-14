@@ -102,8 +102,9 @@ class TestAuth:
 class TestOperations:
     
     def test_operations(self, client_with_login):
+
         calc = {
-            'calc_type': 'Blue',
+            'calc_type': 'blue',
             'foo': -3,
             'bar': 12,
             'baz': 4
