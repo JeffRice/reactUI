@@ -3,3 +3,4 @@ plumbum==1.7.2
 pydash==5.1.0
 pytest==6.2.5
 marshmallow==3.14.1
+Flask-Cors==3.0.10

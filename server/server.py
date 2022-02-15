@@ -2,6 +2,7 @@ import logging
 from uuid import uuid4
 from datetime import datetime
 from flask import Flask, jsonify, request, abort
+from flask_cors import CORS
 from pydash import py_
 from server.calculation import Calculation, calc_types
 from server.calculation_machine import CalculationMachine
@@ -24,6 +25,10 @@ class CreateCalcInputSchema(Schema):
 def create_app(machine: CalculationMachine, auth: bool = True):
 
     app = Flask(__name__)
+
+    # allow from all domains
+    CORS(app)
+    
     user_token = None
     user_calc_ids = set()
     
