@@ -18,7 +18,7 @@ def calc_xs():
     domain = x_max - x_min
     step_size = 1 / resolution
     steps = ceil(domain / step_size)
-    return (x_min + (n * step_size) for n in range(0, steps))
+    return [x_min + (n * step_size) for n in range(0, steps)]
 
 calc_types = {
     "blue": lambda x, v: v * sin(x),
@@ -133,7 +133,7 @@ class Calculation:
     def step_at_time(self, time):
         at = self.stopped_at(time) or time
         elapsed_seconds = (at - self.started_at).seconds
-        step_at_elapsed = floor(elapsed_seconds * self.values_per_second)        
+        step_at_elapsed = floor(elapsed_seconds * self.values_per_second)
         return min(step_at_elapsed, len(self.values) - 1)
 
     def errored_at(self):
