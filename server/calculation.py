@@ -74,9 +74,9 @@ class Calculation:
                inputs: dict,
                started_at: datetime = datetime.now(),
                values_per_second: int = 100,
-               xs = calc_xs(),
+               xs = None,
                calc_y = calc_y):
-        values = [calc_y(x, **inputs) for x in xs]
+        values = [calc_y(x, **inputs) for x in xs or calc_xs()]
         return Calculation(id=str(uuid4()),
                            user_id=user_id,
                            started_at=started_at,
