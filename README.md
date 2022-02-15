@@ -74,8 +74,8 @@ hide.
 
 ## New Calculation Form <a name="new-calculation-form"></a> 
 
-The dashboard page lets the user start a new calculation using a form,
-either at the top of the page or in a modal dialog.
+The dashboard page lets the user start a new calculation using a form.
+The form can appear either above the list of calculations or in a modal dialog.
 
 A new calculation's inputs are:
 
@@ -304,10 +304,17 @@ calculations to display, each of the form shown above.
 
 ## GET /calculations/<uuid>
 
+`<uuid>` here is the value of a calculation's `id` field in the list of calculations
+returned by `/calculations`.
+
 Returns a JSON object of the calculation with ID `<uuid>`. The object
-will be of the form above, and contain an extra property, `values`,
+will be of the form above, and contains an extra property, `values`,
 which is the list of intermediate values the calculation went
-through before arriving at its current value.
+through before arriving at its current value. 
+
+If you implement the
+d3 graph, the graph is a line graph of the numbers in the
+`values` property (an array of 2000 values).
 
 ## POST /calculations 
 
@@ -333,7 +340,10 @@ reason as the text of the response body.
 
 The UI should not allow the user to submit invalid input.
 
-## PATCH /calculations/<id>/cancel
+## PATCH /calculations/<uuid>/cancel
+
+`<uuid>` here is the value of a calculation's `id` field in the list of calculations
+returned by `/calculations`.
 
 Cancels a running calculation and returns 200. The user can cancel any
 of their own calculations (or any calculation if the server was
