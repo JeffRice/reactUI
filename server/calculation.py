@@ -1,5 +1,5 @@
 import random
-from math import sin, cos, ceil
+from math import sin, cos, ceil, floor
 from uuid import uuid4, UUID
 from typing import List, Optional
 from dataclasses import dataclass, replace, asdict, field
@@ -133,7 +133,7 @@ class Calculation:
     def step_at_time(self, time):
         at = self.stopped_at(time) or time
         elapsed_seconds = (at - self.started_at).seconds
-        step_at_elapsed = elapsed_seconds * self.values_per_second
+        step_at_elapsed = floor(elapsed_seconds * self.values_per_second)        
         return min(step_at_elapsed, len(self.values) - 1)
 
     def errored_at(self):
