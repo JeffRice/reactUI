@@ -132,14 +132,9 @@ class Calculation:
 
     def step_at_time(self, time):
         at = self.stopped_at(time) or time
-        elapsed = at - self.started_at
-        # TODO: remove assert once tested
-        assert elapsed > 0
-        step_at_elapsed = elapsed.seconds * self.values_per_second
-        if step_at_elapsed >= len(self.values):
-            return self.values[-1]
-        else:
-            return self.values[step_at_elapsed]
+        elapsed_seconds = (at - self.started_at).seconds
+        step_at_elapsed = elapsed_seconds * self.values_per_second
+        return min(step_at_elapsed, len(self.values) - 1)
 
     def errored_at(self):
         return self.error.errored_at if self.error else None

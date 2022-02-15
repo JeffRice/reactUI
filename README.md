@@ -10,23 +10,6 @@ single-page-app, providing a dashboard that lets a user manage a set
 of calculations running on the server. You may use any other
 libraries you like in implementing it.
 
-# The Provided Server
-
-Included in this repo is a server that manages a set of long-running
-calculations. It provides HTTP routes letting a client start a new
-calculation, cancel a running calculation, get the current set of
-running calculations, and get the details of a particular calculation,
-including the values it has calculated so far as it "converges" on its final
-value.
-
-The server also simulates other users running and cancelling their own
-calculations, and simulates random occasional errors.
-
-See the section below, [Installing the server](#installing-the-server)
-for instructions on running the server, 
-and the section [Server Routes](#server-routes), for details
-of its HTTP API.
-
 # UI Features
 
 The following are all potential features of this app's UI. 
@@ -111,6 +94,23 @@ Each row in the calculation list should include the following:
 - the calculation's state, one of `Running`, `Completed`, `Cancelled` or `Errored`.
 - a "Cancel" button that notifies the server to cancel the calculation
 - a "Hide" button that toggles the row's inclusion in the user's hidden calculation list
+
+# The Provided Server
+
+Included in this repo is a server that manages a set of long-running
+calculations. It provides HTTP routes letting a client start a new
+calculation, cancel a running calculation, get the current set of
+running calculations, and get the details of a particular calculation,
+including the values it has calculated so far as it "converges" on its final
+value.
+
+The server also simulates other users running and cancelling their own
+calculations, and simulates random occasional errors.
+
+See the section below, [Installing the server](#installing-the-server)
+for instructions on running the server, 
+and the section [Server Routes](#server-routes), for details
+of its HTTP API.
 
 # Installing the server <a name="installing-the-server"></a>
 
