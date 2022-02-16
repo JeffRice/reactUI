@@ -33,7 +33,7 @@ class ServerCli(cli.Application):
                     default=True,
                     help="Provide this to allow HTTP requests that do not include the"
                     " user token returned from the /login route")
-    
+
     @cli.positional(int)
     def main(self, port: int):
 
@@ -50,7 +50,6 @@ class ServerCli(cli.Application):
         if self.other_user_freq != -1:
             logging.info(f"Simulating other users starting calculations roughly every {self.other_user_freq} seconds.")
             machine.simulate_other_users(frequency=self.other_user_freq)
-
 
         logging.info(f"Seeding machine with {self.seed} running calculations.")
         for _ in range(self.seed):

@@ -87,8 +87,8 @@ def create_app(machine: CalculationMachine, auth: bool = True):
         return { "token": user_token }
 
     @app.route('/calculations', methods=['GET'])
-    def list():
-        calcs = [calc.summary(time=datetime.now()) for calc in machine.values()]
+    def get_list():
+        calcs = [calc.summary(time=datetime.now()) for calc in list(machine.values())]
         return jsonify([hide_user(c) for c in calcs])
 
     @app.route('/calculations/<uuid>', methods=['GET'])
