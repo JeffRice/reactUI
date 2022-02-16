@@ -102,7 +102,7 @@ queries it for results, it will provide calculations to display.
 
 Note
 that it never discards a calculation from memory, so if you run the
-server for a very long time you may want to restart it to reclaim
+server for a very long time you will need to restart it to reclaim
 memory.
 
 
@@ -125,7 +125,7 @@ To run the server without requiring a login, you can run it with `--no-auth`:
 $ python3 -m server.cli 5000 --no-auth
 ```
 
-Also note that the `/login` route will return an HTTP 400 if the server is 
+The `/login` route will return an HTTP 400 if the server is 
 started in `--no-auth` mode.
 
 If you have any trouble getting the server running feel free to
@@ -163,17 +163,19 @@ calculations to display, each of the form below:
 
 ```
 {
-  "id": "570b04b6-e88e-412a-9352-2c295b783351",
-  "mine": False,
-  "calc_type": "Blue",
-  "foo": -3,
-  "bar": 6,
-  "baz": -14.3,
-  "value": 2.63,
-  "error": null,
-  "started_at": "2022-02-04 12:34:45",
+  "bar": -6,
+  "baz": 9,
+  "calc_type": "purple",
   "cancelled_at": null,
-  "completed_at": "2022-02-04 12:38:05"
+  "completed_at": "Wed, 16 Feb 2022 17:28:25 GMT",
+  "error": null,
+  "foo": -1,
+  "fraction_complete": 0.952,
+  "id": "a324294b-8dcd-4c1c-929d-9a54526a1837",
+  "mine": false,
+  "started_at": "Wed, 16 Feb 2022 17:28:14 GMT",
+  "value": 18.292505639102423,
+  "values_per_second": 119
 }
 ```
 
@@ -193,20 +195,22 @@ containing the type of error and when it occurred.
 For example:
 ```
 {
-  "id": "570b04b6-e88e-412a-9352-2c295b783351",
-  "user_id": True,
-  "calc_type": "Blue",
-  "foo": -3,
-  "bar": 6,
-  "baz": -14.3,
-  "value": 2.63,
-  "error": { 
-    "errored_at": "2022-02-04 12:36:04", 
-    "error": "Lost connection to sensor" 
+  "bar": 8,
+  "baz": 2,
+  "calc_type": "yellow",
+  "cancelled_at": "Wed, 16 Feb 2022 17:28:21 GMT",
+  "completed_at": null,
+  "error": {
+    "error": "Radiation interference",
+    "errored_at": "Wed, 16 Feb 2022 17:29:46 GMT"
   },
-  "started_at": "2022-02-04 12:34:45",
-  "cancelled_at": null,
-  "completed_at": null
+  "foo": -2,
+  "fraction_complete": 0.504,
+  "id": "c34a29f2-a14a-4fc4-9588-1b2f4a544e31",
+  "mine": false,
+  "started_at": "Wed, 16 Feb 2022 17:28:14 GMT",
+  "value": 1.7918015259494102,
+  "values_per_second": 144
 }
 ```
 
