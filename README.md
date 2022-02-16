@@ -12,7 +12,12 @@ single-page-app, providing a dashboard that lets a user manage a set
 of calculations running on the server. You may use any other
 libraries you like in implementing it.
 
-## The provided server
+This readme first describes the behavior of the server including the
+details of the routes it provides, which will show you what the data
+looks like, and the the section [The UI](#the-ui) details the UI
+functionality available to implement in your project. 
+
+# The provided server
 
 Included in this repo is a server that manages a set of long-running
 calculations in an in-memory database. It provides HTTP routes letting
@@ -20,124 +25,14 @@ a client start a new calculation, cancel a running calculation, get
 the current set of running calculations, and get the details of a
 particular calculation. Each calculation simulates
 "converging" on its final value over time, updating its
-current value until it arrives as its final answer.
+current value until it arrives at its final answer.
 
 The server also simulates other users starting and cancelling
 calculations, and simulates calculations occasionally aborting to due
 a transient error like a network connection. However, you should never
 see exceptions in the server log - if you do please let us know.
 
-# The UI
-
-The following description of the UI is broken out into bullet points,
-each bullet point a potential feature you could implement. Implement as many
-features as you have time for; we do not expect all candidates to
-implement all of the features listed. 
-
-It might helpful to first review the [server's routes](#server-routes) to
-see what calls and data are available for the UI. The UI should
-prevent the user from ever submitting data that produces an HTTP 400
-status code (if the server ever produces a 500 code that's our bug -
-please let us know!)
-
-We would also love to see some tests around one or two features of the
-UI, using the [React Testing
-Library](https://testing-library.com/docs/react-testing-library/intro/). The
-tests do not have to be comprehensive or the full gamut of tests you
-would write normally, just a sample.
-
-The UI consists of three views: a login page, a calculation dashboard
-page, and a calculation detail view. 
-
-## The login page
-
-The login page lets the user log in and use the rest of the
-app. Broken out into individual features:
-
-- The user provides a username and password and submits it to log
-in. If the provided password is correct (the only valid password is
-"password"), the server will respond with a user token that must be
-included in all other server calls as described under 
-[server routes](#server-routes)
-
-- The app remembers the user's token when the page is refreshed.
-
-## The dashboard page
-
-The dashboard page consists of a table of calculations and a form to
-start a new one. Broken out into individual features:
-
-- A table of calculations provided by the server - some running, some completed,
-some cancelled, some errored. The UI sorts the list by `started_at`, such
-that calculations started most recently sort to the top. 
-
-- Above the list of running calculations, a form letting the user
-start a new calculation. The details of the inputs are described 
-under [Server Routes](#server-routes). The UI should not let the user
-submit invalid values, and should use the most appropriate UI
-component for each input.
-
-- The table updates with data from the server once per second.
-
-- The list visually distinguishes the current user's calculations
-  from those of other users.
-
-- The user can cancel any running calculation in the list that they started.
-
-- The user can toggle between viewing all users' calculations
-and just the ones they started themselves.
-
-- The user can hide any rows in the list they don't want to
-monitor by marking the row "Hidden". 
-
-- A toggle component above the list, "Show hidden rows",
-lets the user decide whether rows they've marked as hidden should
-be rendered in the list or not. The UI should remember which rows are marked
-hidden, such that turning it off will hide all rows marked hidden, turning it on
-will show them, and turning it off again will hide them all again. The toggle
-component should only be enabled if the user has marked any rows hidden.
-
-- Instead of displaying a calculation's `fraction_complete` as
-verbatim text or a percentage, render it as a visual progress
-bar. 
-
-- The table provides pagination. 
-
-- The table visually distinguishes a row based on its state - running, 
-completed, or errored.
-
-- A row flashes when its calculation completes, i.e. when the latest server data 
-shows the calculation is completed, and the previous server data did not.
-
-## Calculation detail view
-
-On the server, the calculations simulate arriving at their final value
-over time by continuously updating their current value. Calling the
-calculation detail route will return the same information for that
-calculation as the list route does, but will include an extra
-property `values`, holding all the intermediate values the calculation has
-produced while "converging" on its final answer. 
-
-Broken out into individual features:
-
-- The user can view the detail for any calculation in the list. The
-  detail view can be a third page or a modal dialog/overlay that
-  temporarily obscures the list.  The detail view displays the
-  calculation's inputs and a graph of the calculation's `values`
-  array, rendered using
-  [d3](https://www.d3-graph-gallery.com/graph/line_basic.html).
-
-  Note that React and d3 require a bit of code to play nicely together.
-
-- The graph updates with data from the server once per second,
-letting the user watch its progression over time.
-
-- while viewing a calculation's detail view, the user can copy/paste
-  the url to send to someone, and opening the app with that URL will
-  show the detail view for that calculation (pretending that the app
-  is deployed to a production environment with an accessible host).
-
-# Installing the server <a name="installing-the-server"></a>
+## Installing the server <a name="installing-the-server"></a>
 
 Make sure you have `python3` and `pip3` 
 installed. You'll need at least python version 3.7.
@@ -361,6 +256,110 @@ Cancels a running calculation and returns 200. The user can cancel any
 of their own calculations (or any calculation if the server was
 started with `--no-auth`). If the calculation has already finished,
 errored or been cancelled, the cancel request will have no effect.
+
+# The UI <a name="the-ui"></a>
+
+The following description of the UI is broken out into bullet points,
+each bullet point a potential feature you could implement. Implement as many
+features as you have time for; we do not expect all candidates to
+implement all of the features listed. 
+
+It might helpful to first review the [server's routes](#server-routes) to
+see what calls and data are available for the UI. The UI should
+prevent the user from ever submitting data that produces an HTTP 400
+status code (if the server ever produces a 500 code that's our bug -
+please let us know!)
+
+We would also love to see some tests around one or two features of the
+UI, using the [React Testing
+Library](https://testing-library.com/docs/react-testing-library/intro/). The
+tests do not have to be comprehensive or the full gamut of tests you
+would write normally, just a sample.
+
+The UI consists of three views: a login page, a calculation dashboard
+page, and a calculation detail view. 
+
+## The login page
+
+The login page lets the user log in and use the rest of the
+app. Broken out into individual features:
+
+- The user provides a username and password and submits it to log
+in. If the provided password is correct (the only valid password is
+"password"), the server will respond with a user token that must be
+included in all other server calls as described under 
+[server routes](#server-routes)
+
+- The app remembers the user's token when the page is refreshed.
+
+## The dashboard page
+
+The dashboard page consists of a table of calculations and a form to
+start a new one. Broken out into individual features:
+
+- A table of calculations provided by the server - some running, some completed,
+some cancelled, some errored. The UI sorts the list by `started_at`, such
+that calculations started most recently sort to the top. 
+
+- Above the list of running calculations, a form letting the user
+start a new calculation. The details of the inputs are described 
+under [Server Routes](#server-routes). The UI should not let the user
+submit invalid values, and should use the most appropriate UI
+component for each input.
+
+- The table updates with data from the server once per second.
+
+- The list visually distinguishes the current user's calculations
+  from those of other users.
+
+- The user can cancel any running calculation in the list that they started.
+
+- The user can toggle between viewing all users' calculations
+and just the ones they started themselves.
+
+- The user can hide any rows in the list they don't want to
+monitor by marking the row "Hidden". It should disappear from the list.
+
+- A toggle component above the list, "Show hidden rows",
+lets the user decide whether rows they've marked as hidden should
+be rendered in the list or not. The UI should remember which rows are marked
+hidden, such that once the user has marked some rows as hidden, toggling
+"Show hidden rows" will alternately show them and hide them from the list. 
+
+- Instead of displaying a calculation's `fraction_complete` as
+verbatim text or a percentage, render it as a visual progress
+bar. 
+
+- A row flashes when its calculation completes, i.e. when the latest server data 
+shows the calculation is completed, and the data from the previous poll did not.
+
+## Calculation detail view
+
+On the server, the calculations simulate arriving at their final value
+over time by continuously updating their current value. Calling the
+calculation detail route will return the same information for that
+calculation as the list route does, but will include an extra
+property `values`, holding all the intermediate values the calculation has
+produced while "converging" on its final answer. 
+
+Broken out into individual features:
+
+- The user can view the detail for any calculation in the list. The
+  detail view can be a third page or a modal dialog/overlay that
+  temporarily obscures the list.  The detail view displays the
+  calculation's inputs and a graph of the calculation's `values`
+  array, rendered using
+  [d3](https://www.d3-graph-gallery.com/graph/line_basic.html).
+
+  Note that React and d3 require a bit of code to play nicely together.
+
+- The graph updates with data from the server once per second,
+letting the user watch its progression over time.
+
+- while viewing a calculation's detail view, the user can copy/paste
+  the url to send to someone, and opening the app with that URL will
+  show the detail view for that calculation (pretending that the app
+  is deployed to a production environment with an accessible host).
 
 # Good Luck!
 
