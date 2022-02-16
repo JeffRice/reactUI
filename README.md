@@ -14,8 +14,8 @@ libraries you like in implementing it.
 
 This readme first describes the behavior of the server including the
 details of the routes it provides, which will show you what the data
-looks like, and the the section [The UI](#the-ui) details the UI
-functionality available to implement in your project. 
+looks like. The section [The UI](#the-ui) then details the UI
+you will implement on top of this server.
 
 # The provided server
 
@@ -131,11 +131,11 @@ started in `--no-auth` mode.
 If you have any trouble getting the server running feel free to
 contact us for help. 
 
-# Server Routes <a name="server-routes"></a> 
+## Server Routes <a name="server-routes"></a> 
 
 The server provides the following endpoints:
 
-## POST /login
+### POST /login
 
 The content-type should be `application/json`, and the POST data
 is of the form:
@@ -156,7 +156,7 @@ Note that if you start the server with the option `--no-auth`,
 the `/login` route will return an HTTP 400, and all other
 routes will not require the `x-auth` header.
 
-## GET /calculations
+### GET /calculations
 
 Returns a JSON array of currently-running and recently-run
 calculations to display, each of the form below:
@@ -210,7 +210,7 @@ For example:
 }
 ```
 
-## GET /calculations/<uuid>
+### GET /calculations/<uuid>
 
 `<uuid>` here is the value of a calculation's `id` field in the list of calculations
 returned by `/calculations`.
@@ -220,7 +220,16 @@ will be of the form above, and contains an extra property, `values`,
 which is the list of intermediate values the calculation went
 through before arriving at its current value. It is an array of 2000 numbers.
 
-## POST /calculations 
+Note that if you view the response data in your browser's network tab,
+it may break up the `values` array into ranges for easier
+inspection. 
+
+![Array in chrome network tab response data](https://imgur.com/a/3jwZNUC)
+
+This is a convenience of the UI to make it easier to inspect the data.
+The `values` property is just a single one-dimensional array of 2000 numbers.
+
+### POST /calculations 
 
 Starts a new calculation. The content-type must be `application/json`,
 and the POST data is json of the calculation to start, containing the
@@ -247,7 +256,7 @@ the response data will be json of the form
 where `id` is the ID of the newly created calculation, and corresponds to the `id` field of
 the calculation objects in the list returned by `/calculations`.
 
-## PATCH /calculations/<uuid>/cancel
+### PATCH /calculations/<uuid>/cancel
 
 `<uuid>` here is the value of a calculation's `id` field in the list of calculations
 returned by `/calculations`.
@@ -348,10 +357,11 @@ Broken out into individual features:
   detail view can be a third page or a modal dialog/overlay that
   temporarily obscures the list.  The detail view displays the
   calculation's inputs and a graph of the calculation's `values`
-  array, rendered using
+  array, for example rendered using
   [d3](https://www.d3-graph-gallery.com/graph/line_basic.html).
 
-  Note that React and d3 require a bit of code to play nicely together.
+  If you do use d3 to render the graph, note that React and d3 require
+  a bit of code to play nicely together.
 
 - The graph updates with data from the server once per second,
 letting the user watch its progression over time.
