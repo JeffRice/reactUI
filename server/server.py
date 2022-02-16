@@ -103,7 +103,7 @@ def create_app(machine: CalculationMachine, auth: bool = True):
 
         calc = machine[uuid]
         time = calc.started_at + timedelta(seconds=int(seconds_str)) if seconds_str else datetime.now()
-        
+
         return jsonify(hide_user(machine[uuid].detail(time=time)))
 
     @app.route('/calculations', methods=['POST'])
@@ -137,3 +137,10 @@ def create_app(machine: CalculationMachine, auth: bool = True):
         return f"Cancelled {uuid}", 200
 
     return app
+
+def is_valid_int(s):
+    try:
+        int(s)
+        return True
+    except ValueError:
+        return False
