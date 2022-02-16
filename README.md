@@ -1,126 +1,145 @@
 # eIQ Mobility Frontend Software Engineer Take-Home Project
 
-Thank you for taking the time to do this take-home project.  We've
-designed it to be fun to work on, and to provide a number of options
-as to how many features of it you implement, depending on your
-experience with React and how much time you have to devote to it.
+Thank you for taking the time to do this take-home project. We've
+designed it to be fun to work on, and to provide options as to how
+many features of it you implement, depending on your experience with
+React and how much time you have to devote to it. If you're developing
+a portfolio of work and would like to include this project, you're
+also free to host the provided server online.
 
 For this assignment, you'll implement a [React](https://reactjs.org/)
 single-page-app, providing a dashboard that lets a user manage a set
 of calculations running on the server. You may use any other
 libraries you like in implementing it.
 
-# UI Features
-
-The following are all potential features of this app's UI. 
-Implement as many features as you have time for - we do not
-expect all candidates to implement all of the features.
-
-If time allows, we would also love to see tests
-around one or two of the features implemented.
-
-- A login form with username and password. Submitting it calls the
-  server's `/login` route and goes to the single-page-app's dashboard
-  page. Note that the login form is not necessary to develop the other
-  features of the app - when you start the server with a `--no-auth`
-  command-line option, the server's routes do not require a 
-  valid user token.
-  
-- A dashboard page that queries the server for the current set of
-  running calculations and displays them in a list, described in more
-  detail below under [The Calculation List](#the-calculation-list).
-
-- The dashboard list continuously updates by querying the server once
-  per second.
-
-- The user can submit a new calculation that then displays in the list
-  (if the dashboard is updating once per second, the new one
-  can just show up in the list on the next poll).
-
-- The list visually distinguishes a row by its current state, one
-  of "Running", "Completed", "Cancelled", or "Errored".
-
-- The list visually distinguishes calculations started by the current user
-  from those started by other users.
-
-- The user can toggle whether they see all calculations in the list
-  or just their own, using a toggle switch component.
-
-- The user can cancel a calculation, stopping it running on the server.
-
-- The user can hide a calculation from view.
-
-- The user can toggle a switch to show all hidden calculations, and then
-toggle it again to hide them again without reselecting which to
-hide.
-
-- A row flashes when its calculation completes.
-
-- The UI remembers the user's login token when they refresh the page. 
-
-- The UI remembers the set of hidden calculations when the user refreshes the page.
-  
-- Clicking a calculation goes to a detail page, or displays a modal
-  dialog, displaying that calculation's detail view. The detail view
-  displays the calculation's inputs, and its intermediate values
-  calculated up to the current time as a graph, for example a linechart
-  rendered using
-  [d3](https://www.d3-graph-gallery.com/graph/line_basic.html).  Note
-	that React and d3 require a bit of code to play nicely
-	together. 
-
-- The calculation detail view queries the server once per second,
-  updating the graph and letting the user watch its progress.
-
-## New Calculation Form <a name="new-calculation-form"></a> 
-
-The dashboard page lets the user start a new calculation using a form.
-The form can appear either above the list of calculations or in a modal dialog.
-
-A new calculation's inputs are:
-
-- Calculation: the type of calculation to perform: "Blue", "Green", "Purple", or "Yellow"
-- Foo: any integer from -10 to +10, inclusive (either a slider component or validated text field)
-- Bar: any number (a text field and validation that the user enters a valid number)
-- Baz: any number from 0 to 10, inclusive, (a slider component or a validated text field)
-
-## The Calculation List <a name="the-calculation-list"></a> 
-
-Each row in the calculation list should include the following:
-
-- the inputs of the calculation, listed above under "New Calculation Form"
-- the calculation's current value 
-- an indication of the calculation's progress to completion (a progress bar or text percentage)
-- the calculation's state, one of `Running`, `Completed`, `Cancelled` or `Errored`.
-- a "Cancel" button that notifies the server to cancel the calculation
-- a "Hide" button that toggles the row's inclusion in the user's hidden calculation list
-
-# The Provided Server
+## The provided server
 
 Included in this repo is a server that manages a set of long-running
-calculations. It provides HTTP routes letting a client start a new
-calculation, cancel a running calculation, get the current set of
-running calculations, and get the details of a particular calculation,
-including the values it has calculated so far as it "converges" on its final
-value.
+calculations in an in-memory database. It provides HTTP routes letting
+a client start a new calculation, cancel a running calculation, get
+the current set of running calculations, and get the details of a
+particular calculation. Each calculation simulates
+"converging" on its final value over time, updating its
+current value until it arrives as its final answer.
 
-The server also simulates other users running and cancelling their own
-calculations, and simulates random occasional errors.
+The server also simulates other users starting and cancelling
+calculations, and simulates calculations occasionally aborting to due
+a transient error like a network connection. However, you should never
+see exceptions in the server log - if you do please let us know.
 
-See the section below, [Installing the server](#installing-the-server)
-for instructions on running the server, 
-and the section [Server Routes](#server-routes), for details
-of its HTTP API.
+# The UI
+
+The following description of the UI is broken out into bullet points,
+each bullet point a potential feature you could implement. Implement as many
+features as you have time for; we do not expect all candidates to
+implement all of the features listed. 
+
+It might helpful to first review the [server's routes](#server-routes) to
+see what calls and data are available for the UI. The UI should
+prevent the user from ever submitting data that produces an HTTP 400
+status code (if the server ever produces a 500 code that's our bug -
+please let us know!)
+
+We would also love to see some tests around one or two features of the
+UI, using the [React Testing
+Library](https://testing-library.com/docs/react-testing-library/intro/). The
+tests do not have to be comprehensive or the full gamut of tests you
+would write normally, just a sample.
+
+The UI consists of three views: a login page, a calculation dashboard
+page, and a calculation detail view. 
+
+## The login page
+
+The login page lets the user log in and use the rest of the
+app. Broken out into individual features:
+
+- The user provides a username and password and submits it to log
+in. If the provided password is correct (the only valid password is
+"password"), the server will respond with a user token that must be
+included in all other server calls as described under 
+[server routes](#server-routes)
+
+- The app remembers the user's token when the page is refreshed.
+
+## The dashboard page
+
+The dashboard page consists of a table of calculations and a form to
+start a new one. Broken out into individual features:
+
+- A table of calculations provided by the server - some running, some completed,
+some cancelled, some errored. The UI sorts the list by `started_at`, such
+that calculations started most recently sort to the top. 
+
+- Above the list of running calculations, a form letting the user
+start a new calculation. The details of the inputs are described 
+under [Server Routes](#server-routes). The UI should not let the user
+submit invalid values, and should use the most appropriate UI
+component for each input.
+
+- The table updates with data from the server once per second.
+
+- The list visually distinguishes the current user's calculations
+  from those of other users.
+
+- The user can cancel any running calculation in the list that they started.
+
+- The user can toggle between viewing all users' calculations
+and just the ones they started themselves.
+
+- The user can hide any rows in the list they don't want to
+monitor by marking the row "Hidden". 
+
+- A toggle component above the list, "Show hidden rows",
+lets the user decide whether rows they've marked as hidden should
+be rendered in the list or not. The UI should remember which rows are marked
+hidden, such that turning it off will hide all rows marked hidden, turning it on
+will show them, and turning it off again will hide them all again. The toggle
+component should only be enabled if the user has marked any rows hidden.
+
+- Instead of displaying a calculation's `fraction_complete` as
+verbatim text or a percentage, render it as a visual progress
+bar. 
+
+- The table provides pagination. 
+
+- The table visually distinguishes a row based on its state - running, 
+completed, or errored.
+
+- A row flashes when its calculation completes, i.e. when the latest server data 
+shows the calculation is completed, and the previous server data did not.
+
+## Calculation detail view
+
+On the server, the calculations simulate arriving at their final value
+over time by continuously updating their current value. Calling the
+calculation detail route will return the same information for that
+calculation as the list route does, but will include an extra
+property `values`, holding all the intermediate values the calculation has
+produced while "converging" on its final answer. 
+
+Broken out into individual features:
+
+- The user can view the detail for any calculation in the list. The
+  detail view can be a third page or a modal dialog/overlay that
+  temporarily obscures the list.  The detail view displays the
+  calculation's inputs and a graph of the calculation's `values`
+  array, rendered using
+  [d3](https://www.d3-graph-gallery.com/graph/line_basic.html).
+
+  Note that React and d3 require a bit of code to play nicely together.
+
+- The graph updates with data from the server once per second,
+letting the user watch its progression over time.
+
+- while viewing a calculation's detail view, the user can copy/paste
+  the url to send to someone, and opening the app with that URL will
+  show the detail view for that calculation (pretending that the app
+  is deployed to a production environment with an accessible host).
 
 # Installing the server <a name="installing-the-server"></a>
 
-The server is a python 
-[flask](https://flask.palletsprojects.com/en/2.0.x/) app wrapped in a CLI, 
-and the CLI that starts the server takes some command-line options letting 
-you control different aspects of its behavior that might be useful as you develop
-your app. 
-
-To run the CLI, make sure you have `python3` and `pip3` 
+Make sure you have `python3` and `pip3` 
 installed. You'll need at least python version 3.7.
 
 On Mac using [homebrew](https://brew.sh/):
@@ -143,13 +162,16 @@ project's root, i.e. the directory containing this README.md file:
 $ python3 -m venv venv
 $ . ./venv/bin/activate
 $ pip install -r requirements.txt
+$ python3 -m server.cli -h
 ```
 
 That will create a local python environment in this directory,
-and will install the python dependencies in the new local environment.
-It will not install anything globally on your computer.
+install the python dependencies in the new local environment,
+and run the provided CLI, displaying its help text.
 
-Then, to start the server on port 5000:
+## Starting the server
+
+To start the server on port 5000:
 ```
 $ python3 -m server.cli 5000
 ```
@@ -178,51 +200,71 @@ simulating other users creating and cancelling their own calculations:
  * Debug mode: off
 2022-02-11 12:35:36,254 INFO:  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
 ```
-and then, periodically as the server simulates other users' activity, 
+
+The server's "database" is in memory, but it seeds the database with a
+few calculations at startup, so as soon as it starts and your UI
+queries it for results, it will provide calculations to display. 
+
+Note
+that it never discards a calculation from memory, so if you run the
+server for a very long time you may want to restart it to reclaim
+memory.
+
+
+## Simulated users
+
+Periodically as the server simulates other users' activity, 
 it will output notifications like the following:
 ```
 2022-02-11 12:35:44,250 INFO: Adding calc 1033e823-8d9a-41fc-9d13-412bb09fabe6
 2022-02-11 12:35:49,248 INFO: Cancelling 1033e823-8d9a-41fc-9d13-412bb09fabe6
 2022-02-11 12:35:49,252 INFO: Adding calc 98a5ae1c-a9fc-49aa-af83-bb5f175086e6
-2022-02-11 12:35:55,257 INFO: Adding calc f50b22e7-e26f-4a54-a77f-89259e982d60
 2022-02-11 12:36:00,260 INFO: Adding calc c1953050-70c4-47c9-b8e2-39580d84a45a
 2022-02-11 12:36:01,248 INFO: Error: f038c704-0483-448a-ad23-6759b110a229, Radiation interference
-2022-02-11 12:36:02,249 INFO: Cancelling 1033e823-8d9a-41fc-9d13-412bb09fabe6
-2022-02-11 12:36:07,254 INFO: Cancelling b8ab0f92-10dd-47c8-b214-5551fc46eab4
-2022-02-11 12:36:07,265 INFO: Adding calc 01fdd296-4e91-48ab-bc9e-45c98f52db0b
 ```
 
-You can stop the server with a couple `Ctrl-C`s. The server's "database" is in
-memory, but it seeds the database with a few calculations at startup,
-so as soon as it starts and your UI queries it for results, it will provide
-calculations to display.
+## --no-auth mode
 
-To control the simulated users' behavior to facilitate debugging,
-e.g. speed them up, slow them down, turn them off, and to turn off the
-simulated errors, you can provide command-line switches. To see the
-CLI's command-line options, do: 
-``` 
-$ python3 -m server.cli -h 
-```
-That will display help output.
-
-For example, to turn off all simulated user behavior:
-```
-$ python3 -m server.cli 5000 --other-other-freq=-1
-```
-
-And to run the server without requiring a login,
+To run the server without requiring a login, you can run it with `--no-auth`:
 ```
 $ python3 -m server.cli 5000 --no-auth
 ```
 
+Also note that the `/login` route will return an HTTP 400 if the server is 
+started in `--no-auth` mode.
+
 If you have any trouble getting the server running feel free to
-contact us for help.
+contact us for help. 
 
 # Server Routes <a name="server-routes"></a> 
 
-The requests involving calculations will represent a calculation with an
-object such as the following:
+The server provides the following endpoints:
+
+## POST /login
+
+The content-type should be `application/json`, and the POST data
+is of the form:
+```
+{ "username": "fred", "password": "password" }
+```
+
+The only valid password is "password". Returns an HTTP 401 for an invalid password.
+
+For a valid password, returns HTTP 200 and the json response:
+```
+{ "token": "f8190cb3-8124-4372-9946-479a221662d9" }
+```
+containing the user's session token. All subsequent requests must include
+that token as an `x-auth` header.
+
+Note that if you start the server with the option `--no-auth`,
+the `/login` route will return an HTTP 400, and all other
+routes will not require the `x-auth` header.
+
+## GET /calculations
+
+Returns a JSON array of currently-running and recently-run
+calculations to display, each of the form below:
 
 ```
 {
@@ -242,8 +284,7 @@ object such as the following:
 
 - `id` is a unique ID generated by the server when starting a calculation
 - `mine` is `true` or `false`, denoting whether this user created the calculation
-- `calc_type`, `foo`, `bar` and `baz` correspond to the inputs described
-above under "New Calculation Form".
+- `calc_type`, `foo`, `bar` and `baz` correspond to the inputs submitting by the user to start the calculation.
 - `started_at` is the time the calculation started executing.
 - `cancelled_at` is the time the user cancelled the calculation, or null.
 - `completed_at` is the time the calculation finished, or null if the calculation is still running,
@@ -274,34 +315,6 @@ For example:
 }
 ```
 
-The server provides the following endpoints:
-
-## POST /login
-
-The content-type should be `application/json`, and the POST data
-is of the form:
-```
-{ "username": "fred", "password": "password" }
-```
-
-The only valid password is "password". Returns an HTTP 401 for an invalid password.
-
-For a valid password, returns HTTP 200 and the json response:
-```
-{ "token": "f8190cb3-8124-4372-9946-479a221662d9" }
-```
-containing the user's session token. All subsequent requests must include
-that token as an `x-auth` header.
-
-Note that if you start the server with the option `--no-auth`,
-the `/login` route will return an HTTP 400, and all other
-routes will not require the `x-auth` header.
-
-## GET /calculations
-
-Returns a JSON array of currently-running and recently-run
-calculations to display, each of the form shown above.
-
 ## GET /calculations/<uuid>
 
 `<uuid>` here is the value of a calculation's `id` field in the list of calculations
@@ -310,11 +323,7 @@ returned by `/calculations`.
 Returns a JSON object of the calculation with ID `<uuid>`. The object
 will be of the form above, and contains an extra property, `values`,
 which is the list of intermediate values the calculation went
-through before arriving at its current value. 
-
-If you implement the
-d3 graph, the graph is a line graph of the numbers in the
-`values` property (an array of 2000 values).
+through before arriving at its current value. It is an array of 2000 numbers.
 
 ## POST /calculations 
 
@@ -322,23 +331,26 @@ Starts a new calculation. The content-type must be `application/json`,
 and the POST data is json of the calculation to start, containing the
 following fields (shown in the "calculation" object shown above):
 
-- `calc_type`
-- `foo`
-- `bar`
-- `baz`
+- `calc_type`: the type of calculation to perform: `blue`, `green`, `purple`, or `yellow`
+- `foo`: any integer from -10 to +10, inclusive 
+- `bar`: any number 
+- `baz`: any number from 0 to 10, inclusive
 
-All fields are required.
+All fields are required. If any is invalid according to the validation
+rules above this route returns a 400, and the response body will be
+the reason. 
+
+The UI should not allow the user to submit invalid input.
 
 This endpoint returns status 201 if it was able to start the calculation;
 the response data will be json of the form 
+
 ```
 { "id": "f8190cb3-8124-4372-9946-479a221662d9" }
 ```
 
-The endpoint returns status 400 if the input was invalid, with the
-reason as the text of the response body.
-
-The UI should not allow the user to submit invalid input.
+where `id` is the ID of the newly created calculation, and corresponds to the `id` field of
+the calculation objects in the list returned by `/calculations`.
 
 ## PATCH /calculations/<uuid>/cancel
 
@@ -355,4 +367,4 @@ errored or been cancelled, the cancel request will have no effect.
 We hope you enjoy developing the UI. Let us know if you run into any
 issues with the server - we have tested it but let us know if you
 encounter any issues with it. We look forward to reviewing your
-project. Good luck!
+project, and we hope it's fun to work on. Good luck!
