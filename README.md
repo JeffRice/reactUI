@@ -233,6 +233,14 @@ inspection.
 This is a convenience of the UI to make it easier to inspect the data.
 The `values` property is just a single one-dimensional array of 2000 numbers.
 
+#### Debugging tool: `at` 
+
+If you add an `at` query var to the detail route, specifying an
+integer number of seconds, the calculation object returned will
+simulate the state of the calculation `at` seconds into it. This is
+probably more useful in debugging the server than the client, but
+it's there for you if it's useful.
+
 ### POST /calculations 
 
 Starts a new calculation. The content-type must be `application/json`,
