@@ -1,6 +1,6 @@
 import logging
 from uuid import uuid4
-from datetime import datetime
+from datetime import datetime, timedelta
 from flask import Flask, jsonify, request, abort
 from flask_cors import CORS
 from pydash import py_
@@ -93,9 +93,18 @@ def create_app(machine: CalculationMachine, auth: bool = True):
 
     @app.route('/calculations/<uuid>', methods=['GET'])
     def get_detail(uuid):
+
+        seconds_str = request.args.get("at")
+        if seconds_str and not is_valid_int(seconds_str):
+            abort(400, "at must be an integer")
+
         if uuid not in machine:
             return log_and_return("Unknown Calculation ID", 404)
-        return jsonify(hide_user(machine[uuid].detail(time=datetime.now())))
+
+        calc = machine[uuid]
+        time = calc.started_at + timedelta(seconds=int(seconds_str)) if seconds_str else datetime.now()
+        
+        return jsonify(hide_user(machine[uuid].detail(time=time)))
 
     @app.route('/calculations', methods=['POST'])
     def start():

@@ -95,7 +95,7 @@ class Calculation:
                 'bar': random.randint(-10, 10),
                 'baz': random.randint(0, 10),
             },
-            values_per_second=random.randint(50, 400))
+            values_per_second=random.randint(25, 200))
 
     def __repr__(self):
         return str(self)

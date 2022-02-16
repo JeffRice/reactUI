@@ -217,8 +217,12 @@ returned by `/calculations`.
 
 Returns a JSON object of the calculation with ID `<uuid>`. The object
 will be of the form above, and contains an extra property, `values`,
-which is the list of intermediate values the calculation went
-through before arriving at its current value. It is an array of 2000 numbers.
+which is the list of intermediate values the calculation went through
+before arriving at its current value. A completed calculation's
+`values` property is an array of 2000 numbers. If a calculation is
+still running, its `values` property will only contain as many values
+as it has calculated so far en route to its final value. Likewise, a
+cancelled or errored calculation will not contain all 2000 values.
 
 Note that if you view the response data in your browser's network tab,
 it may break up the `values` array into ranges for easier
