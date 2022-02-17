@@ -168,10 +168,7 @@ class Calculation:
         return elapsed and elapsed >= expire_after
         
     def summary(self, time):
-        return {
-            **py_.omit(self.detail(time), 'values'),
-            'values': len(self.values)
-        }
+        return py_.omit(self.detail(time), 'values')    
 
     def detail(self, time):
         return py_.omit({

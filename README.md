@@ -286,6 +286,26 @@ of their own calculations (or any calculation if the server was
 started with `--no-auth`). If the calculation has already finished,
 errored or been cancelled, the cancel request will have no effect.
 
+## CLI list view
+
+If it helps to clarify your understanding of the server, you can use a subcommand
+of the cli, `list`, and the unix `watch` command to create a simple terminal window
+version of the dashboard list. 
+
+In one tab, start the server with `--no-auth`
+```
+$ python3 -m server.cli start 5103 --no-auth
+```
+in another tab:
+```
+$ brew install watch
+$ . ./venv/bin/activate
+$ watch -n 1 python3 -m server.cli list 5103
+```
+
+That will display a text-rendered table of the running calculations,
+updating itself once per second.
+
 # The UI <a name="the-ui"></a>
 
 The following description of the UI is broken out into bullet points,
