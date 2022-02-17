@@ -293,8 +293,7 @@ each bullet point a potential feature you could implement. Implement as many
 features as you have time for; we do not expect all candidates to
 implement all of the features listed. 
 
-It might helpful to first review the [server's routes](#server-routes) to
-see what calls and data are available for the UI. The UI should
+The UI should
 prevent the user from ever submitting data that produces an HTTP 400
 status code (if the server ever produces a 500 code that's our bug -
 please let us know!)
@@ -388,11 +387,7 @@ Broken out into individual features:
   detail view can be a third page or a modal dialog/overlay that
   temporarily obscures the list.  The detail view displays the
   calculation's inputs and a graph of the calculation's `values`
-  array, for example rendered using
-  [d3](https://www.d3-graph-gallery.com/graph/line_basic.html).
-
-  If you do use d3 to render the graph, note that React and d3 require
-  a bit of code to play nicely together.
+  array, for example rendered using [plotly](https://plotly.com/javascript/line-charts/)
 
 - The graph updates with data from the server once per second,
 letting the user watch its progression over time.
