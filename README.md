@@ -147,7 +147,7 @@ is of the form:
 { "username": "fred", "password": "password" }
 ```
 
-The only valid password is "password". Returns an HTTP 401 for an invalid password.
+The only valid password is "password". Returns an HTTP 403 for an invalid password.
 
 For a valid password, returns HTTP 200 and the json response:
 ```

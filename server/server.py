@@ -44,7 +44,7 @@ def create_app(machine: CalculationMachine, auth: bool = True):
         if not auth:
             return
         if request.path == "/login":
-            return;
+            return
         if not user_token_header():
             abort(400)
         if user_token_header() != user_token:
@@ -80,7 +80,7 @@ def create_app(machine: CalculationMachine, auth: bool = True):
             abort(400, str(errors))
 
         if params['password'] != 'password':
-            return log_and_return("Invalid credentials", 401)
+            return log_and_return("Invalid credentials", 403)
 
         set_user_token(uuid4())
 
