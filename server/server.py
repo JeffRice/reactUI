@@ -48,7 +48,7 @@ def create_app(machine: CalculationMachine, auth: bool = True):
         if not user_token_header():
             abort(400)
         if user_token_header() != user_token:
-            abort(401)
+            abort(403)
 
     def hide_user(calc):
         return py_.omit({
@@ -80,7 +80,7 @@ def create_app(machine: CalculationMachine, auth: bool = True):
             abort(400, str(errors))
 
         if params['password'] != 'password':
-            return log_and_return("Invalid credentials", 403)
+            return log_and_return("Invalid credentials", 401)
 
         set_user_token(uuid4())
 
