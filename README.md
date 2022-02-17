@@ -290,7 +290,7 @@ errored or been cancelled, the cancel request will have no effect.
 
 If it helps to clarify your understanding of the server, you can use a subcommand
 of the cli, `list`, and the unix `watch` command to create a simple terminal window
-version of the dashboard list. 
+dashboard of running calculations.
 
 In one tab, start the server with `--no-auth`
 ```
