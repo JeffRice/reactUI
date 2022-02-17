@@ -98,8 +98,8 @@ class Calculation:
             values_per_second=random.randint(25, 200))
 
     def __repr__(self):
-        return str(self)
-
+        return str(py_.omit(asdict(self), 'values'))
+    
     def __str__(self):
         return str(self.summary(datetime.now()))
     
@@ -136,24 +136,31 @@ class Calculation:
         step_at_elapsed = floor(elapsed_seconds * self.values_per_second)
         return min(step_at_elapsed, len(self.values) - 1)
 
+    @property
     def errored_at(self):
         return self.error.errored_at if self.error else None
 
     def stopped_at(self, time):
-        return self.completed_at(time) or self.cancelled_at or self.errored_at() or None
+        return self.completed_at(time) or self.cancelled_at or self.errored_at or None
 
     @property
-    def time_to_calculate(self):
-        return random.randint(10, 60)
+    def seconds_to_calculate(self):
+        return len(self.values) / self.values_per_second
 
+    @property
+    def will_complete_at(self):
+        return self.started_at + timedelta(seconds=self.seconds_to_calculate)
+    
     def completed_at(self, time):
-        would_complete_at = self.started_at + timedelta(seconds=self.time_to_calculate)
-        can_complete = not (self.errored_at() or self.cancelled_at)
-        return would_complete_at if can_complete and would_complete_at <= time else None
-
+        can_complete = not (self.errored_at or self.cancelled_at)
+        return self.will_complete_at if can_complete and self.will_complete_at <= time else None
+        
     def fraction_complete(self, time):
-        step = self.step_at_time(time)
-        return step / self.total_steps
+        if self.completed_at(time):
+            return 100.0
+        else:
+            step = self.step_at_time(time)
+            return float(step) / self.total_steps
     
     def summary(self, time):
         return py_.omit(self.detail(time), 'values')

@@ -11,18 +11,18 @@ class ServerCli(cli.Application):
 
     other_user_freq = cli.SwitchAttr("--other-user-freq",
                                      argtype=int,
-                                     default=5,
-                                     help="How often simulated users should start calculations, -1 for never.")
+                                     default=15,
+                                     help="How often, on average, simulated users should start calculations, in seconds, or -1 for never.")
 
     other_user_cancel_freq = cli.SwitchAttr("--other-user-cancel",
                                             argtype=int,
-                                            default=10,
-                                            help="How often simulated users should cancl their calculations. -1 for never.")
+                                            default=90,
+                                            help="How often, on average, simulated users should cancel their calculations, in seconds, or -1 for never.")
 
     error_freq = cli.SwitchAttr("--error-freq",
                                 argtype=int,
-                                default=30,
-                                help="How often errors should occur. -1 for never")
+                                default=180,
+                                help="How often, on average, errors should occur, in seconds, or -1 for never")
     
     seed = cli.SwitchAttr("--seed",
                           argtype=int,
@@ -34,11 +34,24 @@ class ServerCli(cli.Application):
                     help="Provide this to allow HTTP requests that do not include the"
                     " user token returned from the /login route")
 
+    expire = cli.SwitchAttr("--expire",
+                            argtype=int,
+                            default=60*10,
+                            help="How long completed/cancelled/errored calculations should be retined, in seconds (reclaims memory and avoids the need for pagination). -1 if they should be retained indefinitely.")
+    
     @cli.positional(int)
     def main(self, port: int):
 
         machine = CalculationMachine()
-        
+
+        logging.info(f"Seeding machine with {self.seed} running calculations.")
+        for _ in range(self.seed):
+            machine.add(Calculation.random())
+            
+        if self.expire != -1:
+            logging.info(f"Completed/cancelled/errored calculations will be retained {self.expire} seconds.")
+            machine.start_expiration_thread(self.expire)
+            
         if self.error_freq != -1:
             logging.info(f"Simulating errors roughly every {self.error_freq} seconds")
             machine.simulate_errors(frequency=self.error_freq)
@@ -50,11 +63,7 @@ class ServerCli(cli.Application):
         if self.other_user_freq != -1:
             logging.info(f"Simulating other users starting calculations roughly every {self.other_user_freq} seconds.")
             machine.simulate_other_users(frequency=self.other_user_freq)
-
-        logging.info(f"Seeding machine with {self.seed} running calculations.")
-        for _ in range(self.seed):
-            machine.add(Calculation.random())
-
+            
         app = create_app(machine=machine, auth=self.auth)
         app.run(port=port)
         logging.info(f"Server listening on port {port}")

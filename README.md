@@ -100,12 +100,6 @@ The server's "database" is in memory, but it seeds the database with a
 few calculations at startup, so as soon as it starts and your UI
 queries it for results, it will provide calculations to display. 
 
-Note
-that it never discards a calculation from memory, so if you run the
-server for a very long time you will need to restart it to reclaim
-memory.
-
-
 ## Simulated users
 
 Periodically as the server simulates other users' activity, 
@@ -326,6 +320,13 @@ start a new one. Broken out into individual features:
 some cancelled, some errored. The UI sorts the list by `started_at`, such
 that calculations started most recently sort to the top. 
 
+To render the table, please do not use an off-the-shelf table
+component that provides common bells and whistles like sorting by
+column and pagination. Although that might make sense on the job
+depending on the use case, for this exercise we would prefer to see
+the list rendered using vanilla react code. Third-party components for
+individual cell values are fine though.
+
 - Above the list of running calculations, a form letting the user
 start a new calculation. The details of the inputs are described 
 under [Server Routes](#server-routes). The UI should not let the user
@@ -333,6 +334,10 @@ submit invalid values, and should use the most appropriate UI
 component for each input.
 
 - The table updates with data from the server once per second.
+
+Don't worry about pagination. The server "forgets" finished calculations
+after a period of time to reclaim memory, and this also keeps the
+list your need to display to a manageable size.
 
 - The list visually distinguishes the current user's calculations
   from those of other users.

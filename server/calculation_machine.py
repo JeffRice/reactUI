@@ -13,8 +13,8 @@ from server.calculation import Calculation
 def loop_in_thread(f, calc_delay):
     def loop():
         while True:
-            f()
             time.sleep(calc_delay())
+            f()
     Thread(target=loop).start()
 
 def variable_delay(frequency):
@@ -79,3 +79,17 @@ class CalculationMachine(Mapping):
                 error = random.choice(errors)
                 self.error(victim, error)
         loop_in_thread(f, variable_delay(frequency))
+
+    def start_expiration_thread(self, retain_for):
+        def f():
+            now = datetime.now()
+            def is_expired(calc):
+                stopped_at = calc.stopped_at(now)
+                elapsed = stopped_at and (now - stopped_at).seconds or 0
+                return elapsed >= retain_for
+            expired = [uuid for uuid, calc in self.items() if is_expired(calc)]
+            for uuid in expired:
+                logging.info(f"Forgetting {self.calculations[uuid]}")
+            self.calculations = py_.omit(self.calculations, *expired)
+            self.other_user_calc_ids = [uuid for uuid in self.other_user_calc_ids if uuid in self.calculations]
+        loop_in_thread(f, lambda: 1)
