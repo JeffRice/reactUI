@@ -66,9 +66,9 @@ and run the provided CLI, displaying its help text.
 
 ## Starting the server
 
-To start the server on port 5000:
+To start the server on port 5103 (a port number unlikely to be in use):
 ```
-$ python3 -m server.cli 5000
+$ python3 -m server.cli 5103
 ```
 
 If you get an error that that address is in use, Ctrl-C a couple times
@@ -76,7 +76,7 @@ to kill the server's background processes and try again with a
 different port number.
 
 When the server starts, you should see output like the following, as
-the server starts an HTTP server listening on port `5000` and starts
+the server starts an HTTP server listening on port `5103` and starts
 simulating other users creating and cancelling their own calculations:
 ```
 2022-02-11 12:35:36,243 INFO: Simulating errors roughly every 30 seconds
@@ -93,7 +93,7 @@ simulating other users creating and cancelling their own calculations:
    WARNING: This is a development server. Do not use it in a production deployment.
    Use a production WSGI server instead.
  * Debug mode: off
-2022-02-11 12:35:36,254 INFO:  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+2022-02-11 12:35:36,254 INFO:  * Running on http://127.0.0.1:5103/ (Press CTRL+C to quit)
 ```
 
 The server's "database" is in memory, but it seeds the database with a
@@ -116,7 +116,7 @@ it will output notifications like the following:
 
 To run the server without requiring a login, you can run it with `--no-auth`:
 ```
-$ python3 -m server.cli start 5000 --no-auth
+$ python3 -m server.cli start 5103 --no-auth
 ```
 
 The `/login` route will return an HTTP 400 if the server is 
