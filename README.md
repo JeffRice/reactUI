@@ -83,11 +83,11 @@ simulating other users creating and cancelling their own calculations:
 2022-02-11 12:35:36,244 INFO: Simulating other users cancelling calculations roughly every 10 seconds.
 2022-02-11 12:35:36,244 INFO: Simulating other users starting calculations roughly every 5 seconds.
 2022-02-11 12:35:36,246 INFO: Seeding machine with 5 running calculations.
-2022-02-11 12:35:36,246 INFO: Adding calc f038c704-0483-448a-ad23-6759b110a229
-2022-02-11 12:35:36,246 INFO: Adding calc d870d2bf-202b-4251-b3dd-70cacc430ec4
-2022-02-11 12:35:36,247 INFO: Adding calc a37cf4f9-8d28-4c25-9376-1b49c161b667
-2022-02-11 12:35:36,247 INFO: Adding calc ebda0b12-15cd-481e-aef9-598fad2a3e41
-2022-02-11 12:35:36,247 INFO: Adding calc 2cfd744d-156a-42a2-a9f5-4f61b8bd80b8
+2022-02-11 12:35:36,246 INFO: Adding f038c704-0483-448a-ad23-6759b110a229
+2022-02-11 12:35:36,246 INFO: Adding d870d2bf-202b-4251-b3dd-70cacc430ec4
+2022-02-11 12:35:36,247 INFO: Adding a37cf4f9-8d28-4c25-9376-1b49c161b667
+2022-02-11 12:35:36,247 INFO: Adding ebda0b12-15cd-481e-aef9-598fad2a3e41
+2022-02-11 12:35:36,247 INFO: Adding 2cfd744d-156a-42a2-a9f5-4f61b8bd80b8
  * Serving Flask app 'server.server' (lazy loading)
  * Environment: production
    WARNING: This is a development server. Do not use it in a production deployment.
@@ -105,10 +105,10 @@ queries it for results, it will provide calculations to display.
 Periodically as the server simulates other users' activity, 
 it will output notifications like the following:
 ```
-2022-02-11 12:35:44,250 INFO: Adding calc 1033e823-8d9a-41fc-9d13-412bb09fabe6
+2022-02-11 12:35:44,250 INFO: Adding 1033e823-8d9a-41fc-9d13-412bb09fabe6
 2022-02-11 12:35:49,248 INFO: Cancelling 1033e823-8d9a-41fc-9d13-412bb09fabe6
-2022-02-11 12:35:49,252 INFO: Adding calc 98a5ae1c-a9fc-49aa-af83-bb5f175086e6
-2022-02-11 12:36:00,260 INFO: Adding calc c1953050-70c4-47c9-b8e2-39580d84a45a
+2022-02-11 12:35:49,252 INFO: Adding 98a5ae1c-a9fc-49aa-af83-bb5f175086e6
+2022-02-11 12:36:00,260 INFO: Adding c1953050-70c4-47c9-b8e2-39580d84a45a
 2022-02-11 12:36:01,248 INFO: Error: f038c704-0483-448a-ad23-6759b110a229, Radiation interference
 ```
 
@@ -116,7 +116,7 @@ it will output notifications like the following:
 
 To run the server without requiring a login, you can run it with `--no-auth`:
 ```
-$ python3 -m server.cli 5000 --no-auth
+$ python3 -m server.cli start 5000 --no-auth
 ```
 
 The `/login` route will return an HTTP 400 if the server is 
@@ -124,6 +124,16 @@ started in `--no-auth` mode.
 
 If you have any trouble getting the server running feel free to
 contact us for help. 
+
+## Calculations expire after 10 minutes by default
+
+Every ten minutes you'll see server messages like this:
+```
+e2022-02-16 23:37:41,327 INFO: Forgetting 9db45e3c-0c12-46d2-bba6-2c93aacd67d7
+```
+
+This is the server discarding calculations that completed, cancelled or errored
+over ten minutes ago, to avoid using more and more memory as the server runs.
 
 ## Server Routes <a name="server-routes"></a> 
 

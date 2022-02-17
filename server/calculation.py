@@ -72,14 +72,14 @@ class Calculation:
     @staticmethod
     def create(user_id: str,
                inputs: dict,
-               started_at: datetime = datetime.now(),
+               started_at: datetime = None,
                values_per_second: int = 100,
                xs = None,
                calc_y = calc_y):
         values = [calc_y(x, **inputs) for x in xs or calc_xs()]
         return Calculation(id=str(uuid4()),
                            user_id=user_id,
-                           started_at=started_at,
+                           started_at=started_at or datetime.now(),
                            inputs=inputs,
                            values=values,
                            values_per_second=values_per_second)
@@ -145,7 +145,7 @@ class Calculation:
 
     @property
     def seconds_to_calculate(self):
-        return len(self.values) / self.values_per_second
+        return ceil(len(self.values) / self.values_per_second)
 
     @property
     def will_complete_at(self):
@@ -163,7 +163,10 @@ class Calculation:
             return float(step) / self.total_steps
     
     def summary(self, time):
-        return py_.omit(self.detail(time), 'values')
+        return {
+            **py_.omit(self.detail(time), 'values'),
+            'values': len(self.values)
+        }
 
     def detail(self, time):
         return py_.omit({

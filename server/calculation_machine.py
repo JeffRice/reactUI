@@ -39,7 +39,7 @@ class CalculationMachine(Mapping):
         return len(self.calculations)
 
     def add(self, c):
-        logging.info(f"Adding calc {c.id}")
+        logging.info(f"Adding {c.id}")
         self.calculations[c.id] = c
 
     def cancel(self, uuid):
@@ -89,7 +89,7 @@ class CalculationMachine(Mapping):
                 return elapsed >= retain_for
             expired = [uuid for uuid, calc in self.items() if is_expired(calc)]
             for uuid in expired:
-                logging.info(f"Forgetting {self.calculations[uuid]}")
+                logging.info(f"Forgetting {uuid}")
             self.calculations = py_.omit(self.calculations, *expired)
             self.other_user_calc_ids = [uuid for uuid in self.other_user_calc_ids if uuid in self.calculations]
         loop_in_thread(f, lambda: 1)

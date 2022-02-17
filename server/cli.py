@@ -1,5 +1,7 @@
 import logging
 from plumbum import cli
+import requests
+from tabulate import tabulate
 from server.server import create_app
 from server.calculation import Calculation
 from server.calculation_machine import CalculationMachine
@@ -8,7 +10,12 @@ logging.basicConfig(level=logging.DEBUG,
                     format="%(asctime)s %(levelname)s: %(message)s")
 
 class ServerCli(cli.Application):
+    def main(self):
+        pass
 
+@ServerCli.subcommand('start')
+class Start(cli.Application):
+    
     other_user_freq = cli.SwitchAttr("--other-user-freq",
                                      argtype=int,
                                      default=15,
@@ -67,6 +74,20 @@ class ServerCli(cli.Application):
         app = create_app(machine=machine, auth=self.auth)
         app.run(port=port)
         logging.info(f"Server listening on port {port}")
-            
+
+
+@ServerCli.subcommand('list')
+class List(cli.Application):
+    def main(self, port):
+        calcs = sorted(requests.get(f"http://127.0.0.1:{port}/calculations").json(),
+                       key=lambda row: row['started_at'],
+                       reverse=True)
+        if not calcs:
+            return
+        props = ['id', 'started_at', 'cancelled_at', 'calc_type', 'foo', 'bar', 'baz', 'value', 'fraction_complete', 'completed_at']
+        rows = [[calc[prop] for prop in props] for calc in calcs]
+        print(tabulate(rows, headers=props))
+
+        
 if __name__ == '__main__':
     ServerCli.run()
