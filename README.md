@@ -346,7 +346,7 @@ component for each input.
 
 Don't worry about pagination. The server "forgets" finished calculations
 after a period of time to reclaim memory, and this also keeps the
-list your need to display to a manageable size.
+list you need to display to a manageable size.
 
 - The list visually distinguishes the current user's calculations
   from those of other users.
@@ -377,15 +377,18 @@ shows the calculation is completed, and the data from the previous poll did not.
 On the server, the calculations simulate arriving at their final value
 over time by continuously updating their current value. Calling the
 calculation detail route will return the same information for that
-calculation as the list route does, but will include an extra
-property `values`, holding all the intermediate values the calculation has
-produced while "converging" on its final answer. 
+calculation as the list route does, but will include an extra property
+`values`, holding all the intermediate values the calculation has
+produced while "converging" on its final answer. This detail view
+displays those values as a graph as the calculation proceeds, letting
+a user monitor a calculation's progress or inspect how it arrived at
+its answer.
 
 Broken out into individual features:
 
 - The user can view the detail for any calculation in the list. The
   detail view can be a third page or a modal dialog/overlay that
-  temporarily obscures the list.  The detail view displays the
+  temporarily obscures the list. The detail view displays the
   calculation's inputs and a graph of the calculation's `values`
   array, for example rendered using [plotly](https://plotly.com/javascript/line-charts/)
 
