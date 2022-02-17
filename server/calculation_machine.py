@@ -80,16 +80,12 @@ class CalculationMachine(Mapping):
                 self.error(victim, error)
         loop_in_thread(f, variable_delay(frequency))
 
-    def start_expiration_thread(self, retain_for):
+    def start_expiration_thread(self, expire_after: int):
         def f():
             now = datetime.now()
-            def is_expired(calc):
-                stopped_at = calc.stopped_at(now)
-                elapsed = stopped_at and (now - stopped_at).seconds or 0
-                return elapsed >= retain_for
-            expired = [uuid for uuid, calc in self.items() if is_expired(calc)]
-            for uuid in expired:
-                logging.info(f"Forgetting {uuid}")
-            self.calculations = py_.omit(self.calculations, *expired)
-            self.other_user_calc_ids = [uuid for uuid in self.other_user_calc_ids if uuid in self.calculations]
+            expired = [uuid for uuid, calc in self.items() if calc.is_expired(at=now, expire_after=expire_after)]
+            if expired:
+                logging.info(f"Forgetting {', '.join(expired)}")
+                self.calculations = py_.omit(self.calculations, *expired)
+                self.other_user_calc_ids = py_.difference(self.other_user_calc_ids, expired)
         loop_in_thread(f, lambda: 1)

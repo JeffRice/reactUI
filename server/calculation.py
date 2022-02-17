@@ -161,7 +161,12 @@ class Calculation:
         else:
             step = self.step_at_time(time)
             return float(step) / self.total_steps
-    
+
+    def is_expired(self, at: datetime, expire_after: int):
+        stopped_at = self.stopped_at(at)
+        elapsed = stopped_at and (at - stopped_at).seconds 
+        return elapsed and elapsed >= expire_after
+        
     def summary(self, time):
         return {
             **py_.omit(self.detail(time), 'values'),

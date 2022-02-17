@@ -129,7 +129,7 @@ contact us for help.
 
 Every ten minutes you'll see server messages like this:
 ```
-e2022-02-16 23:37:41,327 INFO: Forgetting 9db45e3c-0c12-46d2-bba6-2c93aacd67d7
+2022-02-17 14:22:39,982 INFO: Forgetting ea49856c-a14d-4e00-aa0f-c1102efc586e, 62e375cb-49b0-4db1-b2b4-5fc72c0a74d4
 ```
 
 This is the server discarding calculations that completed, cancelled or errored
