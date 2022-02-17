@@ -18,12 +18,12 @@ class Start(cli.Application):
     
     other_user_freq = cli.SwitchAttr("--other-user-freq",
                                      argtype=int,
-                                     default=15,
+                                     default=10,
                                      help="How often, on average, simulated users should start calculations, in seconds, or -1 for never.")
 
     other_user_cancel_freq = cli.SwitchAttr("--other-user-cancel",
                                             argtype=int,
-                                            default=90,
+                                            default=60,
                                             help="How often, on average, simulated users should cancel their calculations, in seconds, or -1 for never.")
 
     error_freq = cli.SwitchAttr("--error-freq",
@@ -78,6 +78,16 @@ class Start(cli.Application):
 
 @ServerCli.subcommand('list')
 class List(cli.Application):
+    """
+    For debugging the server, calls the list route and displays the
+    results in a text table.
+
+    To create a simple polling UI:
+    ```
+    brew install watch
+    watch python3 -m server.cli list 5000
+    ```
+    """
     def main(self, port):
         calcs = sorted(requests.get(f"http://127.0.0.1:{port}/calculations").json(),
                        key=lambda row: row['started_at'],
