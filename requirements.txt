@@ -1,0 +1,8 @@
+Flask==2.0.2
+plumbum==1.7.2
+pydash==5.1.0
+pytest==6.2.5
+marshmallow==3.14.1
+Flask-Cors==3.0.10
+requests==2.27.1
+tabulate==0.8.9
