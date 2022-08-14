@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
- 
+import NewCalcForm from './NewCalcForm';
  
 class TableListing extends Component {
  
@@ -60,15 +60,15 @@ class TableListing extends Component {
 
  
     renderListing() {
-        let recordList = []
+        let recordList = [];
 
-        recordList.sort((a, b) => (a.started_at > b.started_at) ? 1 : -1)
-
+        recordList.sort((a, b) => (a.started_at > b.started_at) ? 1 : -1);
         this.state.records.map((record, index)   => {
             const classes = `calcList ${record.mine}`
+            const recordLink = `secondplot/${record.id}`
             return recordList.push(
                     <tr key={index} className={classes}>
-                        <td>List index {index} id is {record.id} </td>
+                        <td>List index {index} <a href={recordLink}>{record.id} Details Page</a></td>
                         <td>started at is {record.started_at}</td>
                         <td>foo is {record.foo} </td>
                         <td>babar is {record.bar} </td>
@@ -78,12 +78,13 @@ class TableListing extends Component {
                     )
         })
  
-        return recordList;
+        return recordList.reverse();
     }
  
     render() {
         return (
-                                   
+            <div>
+            <NewCalcForm />                
             <table>
              <thead>
                 <tr>
@@ -96,7 +97,7 @@ class TableListing extends Component {
            
                 </tbody>
             </table>
-
+            </div>
         );
     }
 }

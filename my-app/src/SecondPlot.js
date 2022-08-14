@@ -1,7 +1,16 @@
 import React from 'react';
 import Plot from 'react-plotly.js';
+import { useParams } from "react-router-dom";
+
+function withParams(Component) {
+  return props => <Component {...props} params={useParams()} />;
+}
+
 
 class SecondPlot extends React.Component {
+
+
+
     constructor(props) {
       super(props);
       this.state = {data: [
@@ -16,20 +25,22 @@ class SecondPlot extends React.Component {
 
        layout: {width: 640, height: 480, title: 'A Dynamic Plot'}, frames: [], config: {}}
     }
+
   
 
 
       componentDidMount() {
-        console.log('mounted')
-
-
+        let { id } = this.props.params;
+        console.log(id);
 
         this.timerID = setInterval(
             () => this.tick(),
             1000
           );
 
-
+        this.setState({
+          ['testid']: id
+        });
     }
 
     componentWillUnmount() {
@@ -47,9 +58,12 @@ class SecondPlot extends React.Component {
         plotData[0].mode = 'lines+markers';
         plotData[0].marker = {color: 'red'};
 
+        let { id } = this.props.params;
+        let fetchCalcURL = 'http://127.0.0.1:5103/calculations/' + id;
 
+               console.log(fetchCalcURL);
 
-        fetch('http://127.0.0.1:5103/calculations/2d0bc95a-aa6b-4f49-804d-ce4732cd4060', {  // Enter your IP address here
+        fetch(fetchCalcURL, {  // Enter your IP address here
 
         method: 'GET', 
         mode: 'cors', 
@@ -89,7 +103,10 @@ class SecondPlot extends React.Component {
     }
 
   render() {
+    
     return (
+        <div>
+            <h2>Calculation: {this.state.testid}</h2>
       <Plot
         data={this.state.data}
         layout={this.state.layout}
@@ -97,8 +114,8 @@ class SecondPlot extends React.Component {
         config={this.state.config}
         onInitialized={(figure) => this.setState(figure)}
         onUpdate={(figure) => this.setState(figure)}
-      />
+      /></div>
     );
   }
 }
-export default SecondPlot;
+export default withParams(SecondPlot);

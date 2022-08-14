@@ -13,15 +13,15 @@
   }
 }
 
-.App-header {
-  background-color: #282c34;
+.App {
+  background-color: #fdfdfd;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   font-size: calc(10px + 2vmin);
-  color: white;
+  color: rgb(67, 91, 128);
 }
 
 .App-link {
@@ -43,17 +43,27 @@
 
 table,
 td {
-    border: 1px solid rgb(145, 145, 145);
+    border: 1px solid rgba(145, 145, 145, 0.2);
 }
 .true {
-  background-color: rgb(121, 148, 141);
+  background-color: rgb(198, 243, 215);
 }
 
-thead,
-tfoot {
-    color: #fff;
+a {
+	color: rgb(103, 151, 212);
 }
 
-tr:hover {
-  background-color: rgb(126, 125, 125);
+a:hover {
+	color: rgb(154, 183, 221);
+}
+
+.links li {
+	list-style: none;
+	margin: 0.5em;
+	padding: 0.5em;
+}
+
+.links {
+	display: flex;
+	flex-direction: row;
 }
