@@ -13,8 +13,6 @@ class TableListing extends Component {
  
     componentDidMount() {
 
-        console.log('mounted')
-
 
 
         this.timerID = setInterval(
