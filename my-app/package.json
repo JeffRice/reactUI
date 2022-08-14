@@ -37,5 +37,12 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "canvas": "^2.9.3",
+    "global-jsdom": "^8.5.0",
+    "jsdom": "^20.0.0",
+    "msw": "^0.44.2",
+    "node-fetch": "^3.2.10"
   }
 }

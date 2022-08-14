@@ -39,7 +39,7 @@ class SecondPlot extends React.Component {
           );
 
         this.setState({
-          ['testid']: id
+          'testid': id
         });
     }
 

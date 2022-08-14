@@ -74,6 +74,7 @@ class TableListing extends Component {
                         <td>babar is {record.bar} </td>
                         <td>baz is {record.baz}</td>
                         <td>calc_type is {record.calc_type}</td>
+                        <td>fraction complete {record.fraction_complete}</td>
                     </tr>
                     )
         })
@@ -88,7 +89,7 @@ class TableListing extends Component {
             <table>
              <thead>
                 <tr>
-                    <th colSpan='6'>Calculations Table</th>
+                    <th colSpan='7'>Calculations Table</th>
                 </tr>
              </thead>
                  <tbody>

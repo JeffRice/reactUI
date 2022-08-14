@@ -1,0 +1,171 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`examples of some things 1`] = `
+<div>
+  
+    
+  <label
+    for="ballername"
+  >
+    BallerLabel
+  </label>
+  
+    
+  <input
+    id="ballername"
+  />
+  
+    
+  <button>
+    Print Ballername
+  </button>
+  
+        
+  <form
+    onsubmit="{this.handleSubmit}"
+  >
+    
+          
+    <label>
+      
+            Calc Type:
+            
+      <select
+        name="calc_type"
+        onchange="{this.handleInputChange}"
+        value="{this.state.calc_type}"
+      >
+        
+              
+        <option
+          value="Blue"
+        >
+          Blue
+        </option>
+        
+              
+        <option
+          value="Green"
+        >
+          Green
+        </option>
+        
+              
+        <option
+          value="Purple"
+        >
+          Purple
+        </option>
+        
+              
+        <option
+          value="Yellow"
+        >
+          Yellow
+        </option>
+        
+            
+      </select>
+      
+          
+    </label>
+    
+          
+    <label>
+      
+            Foo:        
+             
+      <input
+        name="Foo"
+        onchange="{this.handleInputChange}"
+        type="number"
+        value="{this.state.Foo}"
+      />
+       
+          
+    </label>
+    
+          
+    <span
+      "red"=""
+      color:=""
+      style="{{"
+      }}=""
+    >
+      {this.state.errors["Foo"]}
+    </span>
+    
+          
+    <label>
+      
+            Bar:        
+             
+      <input
+        name="Bar"
+        onchange="{this.handleInputChange}"
+        type="number"
+        value="{this.state.Bar}"
+      />
+       
+          
+    </label>
+    
+          
+    <span
+      "red"=""
+      color:=""
+      style="{{"
+      }}=""
+    >
+      {this.state.errors["Bar"]}
+    </span>
+    
+          
+    <label>
+      
+            Baz:        
+             
+      <input
+        name="Baz"
+        onchange="{this.handleInputChange}"
+        type="number"
+        value="{this.state.Baz}"
+      />
+       
+          
+      <input
+        disabled="{this.state.submitDisabled}"
+        type="submit"
+        value="Submit"
+      />
+      
+          
+    </label>
+    
+          
+    <span
+      "red"=""
+      color:=""
+      style="{{"
+      }}=""
+    >
+      {this.state.errors["Baz"]}
+    </span>
+    
+        
+  </form>
+  
+  
+  <div>
+    
+        
+    <div
+      data-testid="printed-username"
+    >
+      Jordan
+    </div>
+    
+      
+  </div>
+</div>
+`;
