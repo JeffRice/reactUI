@@ -49,7 +49,7 @@ class SecondPlot extends React.Component {
 
 
 
-        fetch('http://127.0.0.1:5103/calculations/87de6687-671d-4c4f-80e0-cbcb315226c0', {  // Enter your IP address here
+        fetch('http://127.0.0.1:5103/calculations/2d0bc95a-aa6b-4f49-804d-ce4732cd4060', {  // Enter your IP address here
 
         method: 'GET', 
         mode: 'cors', 
@@ -62,8 +62,9 @@ class SecondPlot extends React.Component {
 
 
                let xArray = [];
+               let xArrayLen = data.values.length;
 
-                 for(let i=1; i< data.values.length; i++){
+                 for( let i=1; i< xArrayLen; i++){
                     xArray.push(i);
                   }
 
