@@ -1,3 +1,35 @@
+# eIQ Mobility Frontend Software Engineer Take-Home Project
+![This is a dynamic plot](https://github.com/JeffRice/reactUI/blob/main/my-app/public/dynamicplot.jpg)
+
+## UI Features
+### Login 
+-[Login.js](https://github.com/JeffRice/reactUI/blob/main/my-app/src/Login.js)
+-Login component can post an object to the login endpoint and receive a token, login is not integrated with the rest of the app. 
+--no-auth for the following features
+
+### Create new calculations
+-[NewCalcForm.js](https://github.com/JeffRice/reactUI/blob/main/my-app/src/NewCalcForm.js)
+-A form to create new calculations is above the table
+-Validations check after each input against the accepted parameters
+-Messages are displayed indicating what is invalid
+-The submit button is disabled unless it is a valid submission
+
+### Calculations Table 
+-[TableListing.js](https://github.com/JeffRice/reactUI/blob/main/my-app/src/TableListing.js)
+-The calculations are displayed in a table, sorted by most recent
+-calculations created by the user have a different background color
+-each calculation ID links to it's details page
+-Every second the values are updated
+
+### Details page
+-[SecondPlot.js](https://github.com/JeffRice/reactUI/blob/main/my-app/src/SecondPlot.js)
+-The values of the calculation are charted on a plotly graph
+-Every second the values are updated 
+
+Also implemented 
+-Routing for components, using parameters for details page
+-1 working test suite from "Testing-Library". Just a couple of DOM tests to try things out.
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
